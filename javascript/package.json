@@ -1,0 +1,10 @@
+{
+    "type": "module",
+    "devDependencies": {
+        "mocha": "^8.4.0"
+    },
+    "scripts": {
+        "test": "mocha"
+      }
+
+}
