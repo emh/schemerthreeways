@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 
-import { isAtom, isEmpty, car, cdr, cons, isListOfAtoms, isMember, removeMember, firsts, insertRight, insertLeft, subst, subst2, multiRemoveMember, multiInsertRight, multiInsertLeft, multiSubst, add1, sub1, isZero, plus, minus, addTup, mult, tupPlus, isGreater, isLess, isEqual, expt, div, length, pick, removePick, noNums, allNums, occur } from '../src/little.js';
+import { isAtom, isEmpty, car, cdr, cons, isListOfAtoms, isMember, removeMember, firsts, insertRight, insertLeft, subst, subst2, multiRemoveMember, multiInsertRight, multiInsertLeft, multiSubst, add1, sub1, isZero, plus, minus, addTup, mult, tupPlus, isGreater, isLess, isEqual, expt, div, length, pick, removePick, noNums, allNums, occur, removeMemberAll } from '../src/little.js';
 
 describe('isAtom', () => {
     it('handles strings', () => {
@@ -271,5 +271,12 @@ describe('occur', () => {
     it('counts the occurences of an atom in a list', () => {
         assert.strictEqual(occur('macaroni', ['lasagna', 'spaghetti', 'ravioli', 'macaroni', 'meatballs', 'macaroni']), 2);
         assert.strictEqual(occur('fettuccine', ['lasagna', 'spaghetti', 'ravioli', 'macaroni', 'meatballs', 'macaroni']), 0);
+    });
+});
+
+describe('removeMemberAll', () => {
+    it('removes all occurrences of an atom from a nested list', () => {
+        assert.deepStrictEqual(removeMemberAll('cup', [['coffee'], 'cup', [['tea'], 'cup'], ['and', ['hick']], 'cup']), [['coffee'], [['tea']], ['and', ['hick']]]);
+        assert.deepStrictEqual(removeMemberAll('sauce', [[['tomato', 'sauce']], [['bean'], 'sauce'], ['and', [['flying']], 'sauce']]), [[['tomato']], [['bean']], ['and', [['flying']]]]);
     });
 });

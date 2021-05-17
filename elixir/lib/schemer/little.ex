@@ -442,4 +442,24 @@ defmodule Schemer.Little do
   def occur(a, [ a | tail]), do: add1(occur(a, tail))
 
   def occur(a, [ _ | tail ]), do: occur(a, tail)
+
+  @doc ~S"""
+    Removes all occurrences of an atom from a nested list
+
+    iex> Schemer.Little.rember_all(:cup, [[:coffee], :cup, [[:tea], :cup], [:and, [:hick]], :cup])
+    [[:coffee], [[:tea]], [:and, [:hick]]]
+
+    iex> Schemer.Little.rember_all(:sauce, [[[:tomato, :sauce]], [[:bean], :sauce], [:and, [[:flying]], :sauce]])
+    [[[:tomato]], [[:bean]], [:and, [[:flying]]]]
+  """
+  def rember_all(_, []), do: []
+
+  def rember_all(a, [a | tail]), do: rember_all(a, tail)
+
+  def rember_all(a, [head | tail]) do
+    cond do
+      atom?(head) -> [head | rember_all(a, tail)]
+      true -> [rember_all(a, head) | rember_all(a, tail)]
+    end
+  end
 end

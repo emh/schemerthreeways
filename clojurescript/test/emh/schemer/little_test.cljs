@@ -1,7 +1,7 @@
 (ns emh.schemer.little-test
   (:require
     [cljs.test :refer-macros [deftest is testing run-tests]]
-    [emh.schemer.little :refer [atom? lat? member? rember firsts insert-right insert-left subst subst2 multi-rember multi-insert-right multi-insert-left multi-subst add1 sub1 plus minus add-tup mult tup-plus greater? less? equal? expt div length pick remove-pick no-nums all-nums occur]]))
+    [emh.schemer.little :refer [atom? lat? member? rember firsts insert-right insert-left subst subst2 multi-rember multi-insert-right multi-insert-left multi-subst add1 sub1 plus minus add-tup mult tup-plus greater? less? equal? expt div length pick remove-pick no-nums all-nums occur rember*]]))
 
 (deftest atom?-test
   (is (= (atom? :turkey) true))
@@ -114,5 +114,9 @@
 (deftest occur-test
   (is (= (occur :macaroni '(:lasagna :spaghetti :ravioli :macaroni :meatball :macaroni)) 2))
   (is (= (occur :fettuccine '(:lasagna :spaghetti :ravioli :macaroni :meatball :macaroni)) 0)))
+
+(deftest rember*-test
+  (is (= (rember* :cup '((:coffee) :cup ((:tea) :cup) (:and (:hick)) :cup)) '((:coffee) ((:tea)) (:and (:hick)))))
+  (is (= (rember* :sauce '(((:tomato :sauce)) ((:bean) :sauce) (:and ((:flying)) :sauce))) '(((:tomato)) ((:bean)) (:and ((:flying)))))))
 
 (run-tests)

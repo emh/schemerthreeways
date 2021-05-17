@@ -146,3 +146,10 @@ export const occur = (a, lat) =>
     isEmpty(lat) ? 0
     : car(lat) === a ? add1(occur(a, cdr(lat)))
     : occur(a, cdr(lat));
+
+export const removeMemberAll = (a, l) =>
+    isEmpty(l) ? []
+    : isAtom(car(l)) ?
+        car(l) === a ? removeMemberAll(a, cdr(l))
+        : cons(car(l), removeMemberAll(a, cdr(l)))
+    : cons(removeMemberAll(a, car(l)), removeMemberAll(a, cdr(l)));
