@@ -204,4 +204,242 @@ defmodule Schemer.Little do
   def multi_subst(new, old, [old | tail]), do: [new | multi_subst(new, old, tail)]
 
   def multi_subst(new, old, [head | tail]), do: [head | multi_subst(new, old, tail)]
+
+  @doc ~S"""
+    Adds 1 to n
+
+    iex> Schemer.Little.add1(67)
+    68
+  """
+  def add1(n), do: n + 1
+
+  @doc ~S"""
+    Subtracts 1 from n
+
+    iex> Schemer.Little.sub1(67)
+    66
+  """
+  def sub1(n), do: n - 1
+
+
+  @doc ~S"""
+    Tests if n is zero
+
+    iex> Schemer.Little.zero?(0)
+    true
+
+    iex> Schemer.Little.zero?(67)
+    false
+  """
+  def zero?(0), do: true
+
+  def zero?(_), do: false
+
+  @doc ~S"""
+    Adds two numbers
+
+    iex> Schemer.Little.plus(46, 12)
+    58
+  """
+  def plus(n, 0), do: n
+
+  def plus(n, m), do: add1(plus(n, sub1(m)))
+
+  @doc ~S"""
+    Subtracts two numbers
+
+    iex> Schemer.Little.minus(17, 9)
+    8
+  """
+  def minus(n, 0), do: n
+
+  def minus(n, m), do: sub1(minus(n, sub1(m)))
+
+  @doc ~S"""
+    Sums the values in a tup
+
+    iex> Schemer.Little.add_tup([3, 5, 2, 8])
+    18
+  """
+  def add_tup([]), do: 0
+
+  def add_tup([ head | tail ]), do: plus(head, add_tup(tail))
+
+  @doc ~S"""
+    Multiplies two numbers
+
+    iex> Schemer.Little.mult(13, 4)
+    52
+  """
+  def mult(_, 0), do: 0
+
+  def mult(n, m), do: plus(n, mult(n, sub1(m)))
+
+  @doc ~S"""
+    Sums two tups
+
+    iex> Schemer.Little.tup_plus([3, 6, 9, 11, 4], [8, 5, 2, 0, 7])
+    [11, 11, 11, 11, 11]
+
+    iex> Schemer.Little.tup_plus([3, 7, 8, 1], [4, 6])
+    [7, 13, 8, 1]
+  """
+  def tup_plus([], tup2), do: tup2
+
+  def tup_plus(tup1, []), do: tup1
+
+  def tup_plus([h1 | t1], [h2 | t2]), do: [plus(h1, h2) | tup_plus(t1, t2)]
+
+  @doc ~S"""
+    Tests if one number is bigger than another
+
+    iex> Schemer.Little.greater?(12, 133)
+    false
+
+    iex> Schemer.Little.greater?(120, 11)
+    true
+
+    iex> Schemer.Little.greater?(3, 3)
+    false
+  """
+  def greater?(0, _), do: false
+
+  def greater?(_, 0), do: true
+
+  def greater?(n, m), do: greater?((sub1 n), (sub1 m))
+
+  @doc ~S"""
+    Tests if one number is smaller than another
+
+    iex> Schemer.Little.less?(4, 6)
+    true
+
+    iex> Schemer.Little.less?(8, 3)
+    false
+
+    iex> Schemer.Little.less?(6, 6)
+    false
+  """
+  def less?(_, 0), do: false
+
+  def less?(0, _), do: true
+
+  def less?(n, m), do: less?((sub1 n), (sub1 m))
+
+  @doc ~S"""
+    Tests if one number is the same as another
+
+    iex> Schemer.Little.equal?(0, 0)
+    true
+
+    iex> Schemer.Little.equal?(1, 83)
+    false
+
+    iex> Schemer.Little.equal?(23, 2)
+    false
+
+    iex> Schemer.Little.equal?(42, 42)
+    true
+  """
+  def equal?(m, m), do: true
+
+  def equal?(_, _), do: false
+
+  @doc ~S"""
+    Raises one number to the power of another
+
+    iex> Schemer.Little.expt(1, 1)
+    1
+
+    iex> Schemer.Little.expt(2, 3)
+    8
+
+    iex> Schemer.Little.expt(5, 3)
+    125
+  """
+  def expt(_, 0), do: 1;
+
+  def expt(n, m), do: mult(n, expt(n, sub1(m)));
+
+  @doc ~S"""
+    Divides one number by another
+
+    iex> Schemer.Little.divide(15, 4)
+    3
+  """
+  def divide(n, m) when n < m, do: 0
+
+  def divide(n, m), do: add1(div(minus(n, m), m))
+
+  @doc ~S"""
+    Returns the number of items in the list
+
+    iex> Schemer.Little.len([:hotdogs, :with, :mustard, :sauerkraut, :and, :pickles])
+    6
+
+    iex> Schemer.Little.len([:ham, :and, :cheese, :on, :rye])
+    5
+  """
+  def len([]), do: 0
+
+  def len(lat), do: add1(len(cdr(lat)))
+
+  @doc ~S"""
+    Picks the nth atom from the list
+
+    iex> Schemer.Little.pick(4, [:lasagna, :spaghetti, :ravioli, :macaroni, :meatballs])
+    :macaroni
+  """
+  def pick(1, [head | _]), do: head
+
+  def pick(n, [_ | tail]), do: pick(sub1(n), tail)
+
+  @doc ~S"""
+    Removes the nth atom from the list
+
+    iex> Schemer.Little.remove_pick(3, [:hotdogs, :and, :hot, :mustard])
+    [:hotdogs, :and, :mustard]
+  """
+  def remove_pick(1, [_ | tail]), do: tail
+
+  def remove_pick(n, [head | tail]), do: [head | remove_pick(sub1(n), tail)]
+
+  @doc ~S"""
+    Removes all numbers from a list
+
+    iex> Schemer.Little.no_nums([5, :pears, 6, :prunes, 9, :dates])
+    [:pears, :prunes, :dates]
+  """
+  def no_nums([]), do: []
+
+  def no_nums([ head | tail]) when is_number(head), do: no_nums(tail)
+
+  def no_nums([ head | tail ]), do: [head | no_nums(tail)]
+
+  @doc ~S"""
+    Removes all non numbers from a list
+
+    iex> Schemer.Little.all_nums([5, :pears, 6, :prunes, 9, :dates])
+    [5, 6, 9]
+  """
+  def all_nums([]), do: []
+
+  def all_nums([ head | tail]) when is_number(head), do: [head | all_nums(tail)]
+
+  def all_nums([ _ | tail ]), do: all_nums(tail)
+
+  @doc ~S"""
+    Counts occurrences of an atom in a list
+
+    iex> Schemer.Little.occur(:macaroni, [:lasagna, :spaghetti, :ravioli, :macaroni, :meatballs, :macaroni])
+    2
+
+    iex> Schemer.Little.occur(:fettuccine, [:lasagna, :spaghetti, :ravioli, :macaroni, :meatballs, :macaroni])
+    0
+  """
+  def occur(_, []), do: 0
+
+  def occur(a, [ a | tail]), do: add1(occur(a, tail))
+
+  def occur(a, [ _ | tail ]), do: occur(a, tail)
 end
