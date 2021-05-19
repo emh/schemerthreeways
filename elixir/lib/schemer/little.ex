@@ -462,4 +462,41 @@ defmodule Schemer.Little do
       true -> [rember_all(a, head) | rember_all(a, tail)]
     end
   end
+
+  @doc ~S"""
+    Inserts the new atom to the right of all old atoms in a nested list
+
+    iex> Schemer.Little.insert_right_all(2, 1, [1, 3, 4])
+    [1, 2, 3, 4]
+
+    iex> Schemer.Little.insert_right_all(:roast, :chuck, [[:how, :much, [:wood]], :could, [[:a, [:wood], :chuck]], [[[:chuck]]], [:if, [:a], [[:wood, :chuck]]], :could, :chuck, :wood])
+    [[:how, :much, [:wood]], :could, [[:a, [:wood], :chuck, :roast]], [[[:chuck, :roast]]], [:if, [:a], [[:wood, :chuck, :roast]]], :could, :chuck, :roast, :wood]
+  """
+  def insert_right_all(_, _, []), do: []
+
+  def insert_right_all(new, old, [old | tail]), do: [old | [new | insert_right_all(new, old, tail)]]
+
+  def insert_right_all(new, old, [head | tail]) do
+    cond do
+      atom?(head) -> [head | insert_right_all(new, old, tail)]
+      true -> [insert_right_all(new, old, head) | insert_right_all(new, old, tail)]
+    end
+  end
+
+  @doc ~S"""
+    Counts all occurrences of an atom in a nested list
+
+    iex> Schemer.Little.occur_all(:banana, [[:banana], [:split, [[[[:banana, :ice]]], [:cream, [:banana]], :sherbet]], [:banana], [:bread], [:banana, :brandy]])
+    5
+  """
+  def occur_all(_, []), do: 0
+
+  def occur_all(a, [a | tail]), do: add1(occur_all(a, tail))
+
+  def occur_all(a, [head | tail]) do
+    cond do
+      atom?(head) -> occur_all(a, tail)
+      true -> plus(occur_all(a, head), occur_all(a, tail))
+    end
+  end
 end

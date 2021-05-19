@@ -1,7 +1,7 @@
 (ns emh.schemer.little-test
   (:require
     [cljs.test :refer-macros [deftest is testing run-tests]]
-    [emh.schemer.little :refer [atom? lat? member? rember firsts insert-right insert-left subst subst2 multi-rember multi-insert-right multi-insert-left multi-subst add1 sub1 plus minus add-tup mult tup-plus greater? less? equal? expt div length pick remove-pick no-nums all-nums occur rember*]]))
+    [emh.schemer.little :refer [atom? lat? member? rember firsts insert-right insert-left subst subst2 multi-rember multi-insert-right multi-insert-left multi-subst add1 sub1 plus minus add-tup mult tup-plus greater? less? equal? expt div length pick remove-pick no-nums all-nums occur rember* insert-right* occur*]]))
 
 (deftest atom?-test
   (is (= (atom? :turkey) true))
@@ -119,4 +119,11 @@
   (is (= (rember* :cup '((:coffee) :cup ((:tea) :cup) (:and (:hick)) :cup)) '((:coffee) ((:tea)) (:and (:hick)))))
   (is (= (rember* :sauce '(((:tomato :sauce)) ((:bean) :sauce) (:and ((:flying)) :sauce))) '(((:tomato)) ((:bean)) (:and ((:flying)))))))
 
-(run-tests)
+(deftest insert-right*-test
+  (is (= (insert-right* 2 1 '(1 3 4)) '(1 2 3 4)))
+  (is (= (insert-right* :roast :chuck '((:how :much (:wood)) :could ((:a (:wood) :chuck)) (((:chuck))) (:if (:a) ((:wood :chuck))) :could :chuck :wood)) '((:how :much (:wood)) :could ((:a (:wood) :chuck :roast)) (((:chuck :roast))) (:if (:a) ((:wood :chuck :roast))) :could :chuck :roast :wood))))
+
+(deftest occur*-test
+  (is (= (occur* :banana '((:banana) (:split ((((:banana :ice))) (:cream (:banana)) :sherbet)) (:banana) (:bread) (:banana :brandy))) 5)))
+
+  (run-tests)

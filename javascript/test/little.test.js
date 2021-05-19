@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 
-import { isAtom, isEmpty, car, cdr, cons, isListOfAtoms, isMember, removeMember, firsts, insertRight, insertLeft, subst, subst2, multiRemoveMember, multiInsertRight, multiInsertLeft, multiSubst, add1, sub1, isZero, plus, minus, addTup, mult, tupPlus, isGreater, isLess, isEqual, expt, div, length, pick, removePick, noNums, allNums, occur, removeMemberAll } from '../src/little.js';
+import { isAtom, isEmpty, car, cdr, cons, isListOfAtoms, isMember, removeMember, firsts, insertRight, insertLeft, subst, subst2, multiRemoveMember, multiInsertRight, multiInsertLeft, multiSubst, add1, sub1, isZero, plus, minus, addTup, mult, tupPlus, isGreater, isLess, isEqual, expt, div, length, pick, removePick, noNums, allNums, occur, removeMemberAll, insertRightAll, occurAll } from '../src/little.js';
 
 describe('isAtom', () => {
     it('handles strings', () => {
@@ -278,5 +278,35 @@ describe('removeMemberAll', () => {
     it('removes all occurrences of an atom from a nested list', () => {
         assert.deepStrictEqual(removeMemberAll('cup', [['coffee'], 'cup', [['tea'], 'cup'], ['and', ['hick']], 'cup']), [['coffee'], [['tea']], ['and', ['hick']]]);
         assert.deepStrictEqual(removeMemberAll('sauce', [[['tomato', 'sauce']], [['bean'], 'sauce'], ['and', [['flying']], 'sauce']]), [[['tomato']], [['bean']], ['and', [['flying']]]]);
+    });
+});
+
+describe('insertRightAll', () => {
+    it('inserts the new atom to the right of the matching old atom in a nested list', () => {
+        assert.deepStrictEqual(insertRightAll(2, 1, [1, 3, 4]), [1, 2, 3, 4]);
+        assert.deepStrictEqual(insertRightAll(
+            'roast',
+            'chuck',
+            [
+                ['how', 'much', ['wood']],
+                'could',
+                [['a', ['wood'], 'chuck']],
+                [[['chuck']]],
+                ['if', ['a'], [['wood', 'chuck']]],
+                'could', 'chuck', 'wood'
+            ]), [
+                ['how', 'much', ['wood']],
+                'could',
+                [['a', ['wood'], 'chuck', 'roast']],
+                [[['chuck', 'roast']]],
+                ['if', ['a'], [['wood', 'chuck', 'roast']]],
+                'could', 'chuck', 'roast', 'wood'
+            ]);
+    });
+});
+
+describe('occurAll', () => {
+    it('counts all occurrences of an atom in a nested list', () => {
+        assert.strictEqual(occurAll('banana', [['banana'], ['split', [[[['banana', 'ice']]], ['cream', ['banana']], 'sherbet']], ['banana'], ['bread'], ['banana', 'brandy']]), 5);
     });
 });

@@ -153,3 +153,17 @@ export const removeMemberAll = (a, l) =>
         car(l) === a ? removeMemberAll(a, cdr(l))
         : cons(car(l), removeMemberAll(a, cdr(l)))
     : cons(removeMemberAll(a, car(l)), removeMemberAll(a, cdr(l)));
+
+export const insertRightAll = (a, b, l) =>
+    isEmpty(l) ? []
+    : isAtom(car(l)) ?
+        car(l) === b ? cons(b, cons(a, insertRightAll(a, b, cdr(l))))
+        : cons(car(l), insertRightAll(a, b, cdr(l)))
+    : cons(insertRightAll(a, b, car(l)), insertRightAll(a, b, cdr(l)));
+
+export const occurAll = (a, l) =>
+    isEmpty(l) ? 0
+    : isAtom(car(l)) ?
+        car(l) === a ? add1(occurAll(a, cdr(l)))
+        : occurAll(a, cdr(l))
+    : plus(occurAll(a, car(l)), occurAll(a, cdr(l)));

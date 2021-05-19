@@ -175,3 +175,22 @@
         (= (first l) a) (rember* a (rest l))
         :else (cons (first l) (rember* a (rest l))))
     :else (cons (rember* a (first l)) (rember* a (rest l)))))
+
+(defn insert-right* [new old l]
+  (cond
+    (empty? l) '()
+    (atom? (first l))
+      (cond
+        (= (first l) old) (cons old (cons new (insert-right* new old (rest l))))
+        :else (cons (first l) (insert-right* new old (rest l))))
+    :else (cons (insert-right* new old (first l)) (insert-right* new old (rest l)))))
+
+(defn occur* [a l]
+  (cond
+    (empty? l) 0
+    (atom? (first l))
+      (cond
+        (= (first l) a) (add1 (occur* a (rest l)))
+        :else (occur* a (rest l)))
+    :else (plus (occur* a (first l)) (occur* a (rest l)))))
+
