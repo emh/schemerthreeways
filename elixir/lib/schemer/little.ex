@@ -499,4 +499,74 @@ defmodule Schemer.Little do
       true -> plus(occur_all(a, head), occur_all(a, tail))
     end
   end
+
+  @doc ~S"""
+    Replaces all occurrences of an atom in a nested list with a new atom
+
+    iex> Schemer.Little.subst_all(:orange, :banana, [[:banana], [:split, [[[[:banana, :ice]]], [:cream, [:banana]], :sherbet]], [:banana], [:bread], [:banana, :brandy]])
+    [[:orange], [:split, [[[[:orange, :ice]]], [:cream, [:orange]], :sherbet]], [:orange], [:bread], [:orange, :brandy]]
+  """
+  def subst_all(_, _, []), do: []
+
+  def subst_all(new, old, [old | tail]), do: [new | subst_all(new, old, tail)]
+
+  def subst_all(new, old, [head | tail]) do
+    cond do
+      atom?(head) -> [head | subst_all(new, old, tail)]
+      true -> [subst_all(new, old, head) | subst_all(new, old, tail)]
+    end
+  end
+
+  @doc ~S"""
+    Inserts the new atom to the left of all old atoms in a nested list
+
+    iex> Schemer.Little.insert_left_all(1, 2, [2, 3, 4])
+    [1, 2, 3, 4]
+
+    iex> Schemer.Little.insert_left_all(:pecker, :chuck, [[:how, :much, [:wood]], :could, [[:a, [:wood], :chuck]], [[[:chuck]]], [:if, [:a], [[:wood, :chuck]]], :could, :chuck, :wood])
+    [[:how, :much, [:wood]], :could, [[:a, [:wood], :pecker, :chuck]], [[[:pecker, :chuck]]], [:if, [:a], [[:wood, :pecker, :chuck]]], :could, :pecker, :chuck, :wood]
+  """
+  def insert_left_all(_, _, []), do: []
+
+  def insert_left_all(new, old, [old | tail]), do: [new | [old | insert_left_all(new, old, tail)]]
+
+  def insert_left_all(new, old, [head | tail]) do
+    cond do
+      atom?(head) -> [head | insert_left_all(new, old, tail)]
+      true -> [insert_left_all(new, old, head) | insert_left_all(new, old, tail)]
+    end
+  end
+
+  @doc ~S"""
+    Tests if an atom occurs anywhere in a nested list
+
+    iex> Schemer.Little.member_all(:chips, [[:potato], [:chips, [[:with], :fish], [:chips]]])
+    true
+  """
+  def member_all(_, []), do: false
+
+  def member_all(a, [a | _]), do: true
+
+  def member_all(a, [head | tail]) do
+    cond do
+      atom?(head) -> member_all(a, tail)
+      true -> member_all(a, head) || member_all(a, tail)
+    end
+  end
+
+  @doc ~S"""
+    Returns the left most atom in a nested list
+
+    iex> Schemer.Little.left_most([[:potato], [:chips, [[:with], :fish], [:chips]]])
+    :potato
+
+    iex> Schemer.Little.left_most([[[:hot], [:tuna, [:and]]], :cheese])
+    :hot
+  """
+  def left_most([head | _]) do
+    cond do
+      atom?(head) -> head
+      true -> left_most(head)
+    end
+  end
 end

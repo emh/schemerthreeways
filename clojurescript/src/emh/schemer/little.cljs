@@ -194,3 +194,34 @@
         :else (occur* a (rest l)))
     :else (plus (occur* a (first l)) (occur* a (rest l)))))
 
+(defn subst* [new old l]
+  (cond
+    (empty? l) '()
+    (atom? (first l))
+      (cond
+        (= (first l) old) (cons new (subst* new old (rest l)))
+        :else (cons (first l) (subst* new old (rest l))))
+    :else (cons (subst* new old (first l)) (subst* new old (rest l)))))
+
+(defn insert-left* [new old l]
+  (cond
+    (empty? l) '()
+    (atom? (first l))
+      (cond
+        (= (first l) old) (cons new (cons old (insert-left* new old (rest l))))
+        :else (cons (first l) (insert-left* new old (rest l))))
+    :else (cons (insert-left* new old (first l)) (insert-left* new old (rest l)))))
+
+(defn member* [a l]
+  (cond
+    (empty? l) false
+    (atom? (first l))
+      (cond
+        (= (first l) a) true
+        :else (member* a (rest l)))
+    :else (or (member* a (first l)) (member* a (rest l)))))
+
+(defn leftmost [l]
+  (cond
+    (atom? (first l)) (first l)
+    :else (leftmost (first l))))

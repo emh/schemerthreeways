@@ -167,3 +167,28 @@ export const occurAll = (a, l) =>
         car(l) === a ? add1(occurAll(a, cdr(l)))
         : occurAll(a, cdr(l))
     : plus(occurAll(a, car(l)), occurAll(a, cdr(l)));
+
+export const substAll = (a, b, l) =>
+    isEmpty(l) ? []
+    : isAtom(car(l)) ?
+        car(l) === b ? cons(a, substAll(a, b, cdr(l)))
+        : cons(car(l), substAll(a, b, cdr(l)))
+    : cons(substAll(a, b, car(l)), substAll(a, b, cdr(l)));
+
+export const insertLeftAll = (a, b, l) =>
+    isEmpty(l) ? []
+    : isAtom(car(l)) ?
+        car(l) === b ? cons(a, cons(b, insertLeftAll(a, b, cdr(l))))
+        : cons(car(l), insertLeftAll(a, b, cdr(l)))
+    : cons(insertLeftAll(a, b, car(l)), insertLeftAll(a, b, cdr(l)));
+
+export const memberAll = (a, l) =>
+    isEmpty(l) ? false
+    : isAtom(car(l)) ?
+        car(l) === a ? true
+        : memberAll(a, cdr(l))
+    : memberAll(a, car(l)) || memberAll(a, cdr(l));
+
+export const leftMost = (l) =>
+    isAtom(car(l)) ? car(l)
+    : leftMost(car(l));

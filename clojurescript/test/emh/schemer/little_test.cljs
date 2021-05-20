@@ -1,7 +1,7 @@
 (ns emh.schemer.little-test
   (:require
     [cljs.test :refer-macros [deftest is testing run-tests]]
-    [emh.schemer.little :refer [atom? lat? member? rember firsts insert-right insert-left subst subst2 multi-rember multi-insert-right multi-insert-left multi-subst add1 sub1 plus minus add-tup mult tup-plus greater? less? equal? expt div length pick remove-pick no-nums all-nums occur rember* insert-right* occur*]]))
+    [emh.schemer.little :refer [atom? lat? member? rember firsts insert-right insert-left subst subst2 multi-rember multi-insert-right multi-insert-left multi-subst add1 sub1 plus minus add-tup mult tup-plus greater? less? equal? expt div length pick remove-pick no-nums all-nums occur rember* insert-right* occur* subst* insert-left* member* leftmost]]))
 
 (deftest atom?-test
   (is (= (atom? :turkey) true))
@@ -126,4 +126,35 @@
 (deftest occur*-test
   (is (= (occur* :banana '((:banana) (:split ((((:banana :ice))) (:cream (:banana)) :sherbet)) (:banana) (:bread) (:banana :brandy))) 5)))
 
-  (run-tests)
+(deftest subst*-test
+  (is (= (subst* :orange :banana '((:banana) (:split ((((:banana :ice))) (:cream (:banana)) :sherbet)) (:banana) (:bread) (:banana :brandy))) '((:orange) (:split ((((:orange :ice))) (:cream (:orange)) :sherbet)) (:orange) (:bread) (:orange :brandy)))))
+
+(deftest insert-left*-test
+  (is (= (insert-left* :pecker
+                       :chuck
+                       '(
+                          (:how :much (:wood))
+                          :could
+                          ((:a (:wood) :chuck))
+                          (((:chuck)))
+                          (:if (:a) ((:wood :chuck)))
+                          :could :chuck :wood
+                        ))
+      '(
+        (:how :much (:wood))
+        :could
+        ((:a (:wood) :pecker :chuck))
+        (((:pecker :chuck)))
+        (:if (:a) ((:wood :pecker :chuck)))
+        :could :pecker :chuck :wood
+      ))))
+
+(deftest member*-test
+  (is (= (member* :chips '((:potato) (:chips ((:with) :fish) (:chips)))) true)))
+
+(deftest leftmost-test
+  (is (= (leftmost '((:potato) (:chips ((:with) :fish) (:chips)))) :potato))
+  (is (= (leftmost '(((:hot) (:tuna (:and))) :cheese)) :hot)))
+
+(run-tests)
+

@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 
-import { isAtom, isEmpty, car, cdr, cons, isListOfAtoms, isMember, removeMember, firsts, insertRight, insertLeft, subst, subst2, multiRemoveMember, multiInsertRight, multiInsertLeft, multiSubst, add1, sub1, isZero, plus, minus, addTup, mult, tupPlus, isGreater, isLess, isEqual, expt, div, length, pick, removePick, noNums, allNums, occur, removeMemberAll, insertRightAll, occurAll } from '../src/little.js';
+import { isAtom, isEmpty, car, cdr, cons, isListOfAtoms, isMember, removeMember, firsts, insertRight, insertLeft, subst, subst2, multiRemoveMember, multiInsertRight, multiInsertLeft, multiSubst, add1, sub1, isZero, plus, minus, addTup, mult, tupPlus, isGreater, isLess, isEqual, expt, div, length, pick, removePick, noNums, allNums, occur, removeMemberAll, insertRightAll, occurAll, substAll, insertLeftAll, memberAll, leftMost } from '../src/little.js';
 
 describe('isAtom', () => {
     it('handles strings', () => {
@@ -307,6 +307,49 @@ describe('insertRightAll', () => {
 
 describe('occurAll', () => {
     it('counts all occurrences of an atom in a nested list', () => {
-        assert.strictEqual(occurAll('banana', [['banana'], ['split', [[[['banana', 'ice']]], ['cream', ['banana']], 'sherbet']], ['banana'], ['bread'], ['banana', 'brandy']]), 5);
+        assert.strictEqual(occurAll('banana',               [['banana'], ['split', [[[['banana', 'ice']]], ['cream', ['banana']], 'sherbet']], ['banana'], ['bread'], ['banana', 'brandy']]), 5);
+    });
+});
+
+describe('substAll', () => {
+    it('replaces all occurrences of an atom in a nested list with a new atom', () => {
+        assert.deepStrictEqual(substAll('orange', 'banana', [['banana'], ['split', [[[['banana', 'ice']]], ['cream', ['banana']], 'sherbet']], ['banana'], ['bread'], ['banana', 'brandy']]), [['orange'], ['split', [[[['orange', 'ice']]], ['cream', ['orange']], 'sherbet']], ['orange'], ['bread'], ['orange', 'brandy']]);
+    });
+});
+
+describe('insertLeftAll', () => {
+    it('inserts the new atom to the left of the matching old atom in a nested list', () => {
+        assert.deepStrictEqual(insertLeftAll(1, 2, [2, 3, 4]), [1, 2, 3, 4]);
+        assert.deepStrictEqual(insertLeftAll(
+            'pecker',
+            'chuck',
+            [
+                ['how', 'much', ['wood']],
+                'could',
+                [['a', ['wood'], 'chuck']],
+                [[['chuck']]],
+                ['if', ['a'], [['wood', 'chuck']]],
+                'could', 'chuck', 'wood'
+            ]), [
+                ['how', 'much', ['wood']],
+                'could',
+                [['a', ['wood'], 'pecker', 'chuck']],
+                [[['pecker', 'chuck']]],
+                ['if', ['a'], [['wood', 'pecker', 'chuck']]],
+                'could', 'pecker', 'chuck', 'wood'
+            ]);
+    });
+});
+
+describe('memberAll', () => {
+    it('tests if an atom occurs anywhere in a nested list', () => {
+        assert.strictEqual(memberAll('chips', [['potato'], ['chips', [['with'], 'fish'], ['chips']]]), true);
+    });
+});
+
+describe('leftMost', () => {
+    it('returns the left most atom in a nested list', () => {
+        assert.strictEqual(leftMost([['potato'], ['chips', [['with'], 'fish'], ['chips']]]), 'potato');
+        assert.strictEqual(leftMost([[['hot'], ['tuna', ['and']]], 'cheese']), 'hot');
     });
 });
