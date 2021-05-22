@@ -192,3 +192,18 @@ export const memberAll = (a, l) =>
 export const leftMost = (l) =>
     isAtom(car(l)) ? car(l)
     : leftMost(car(l));
+
+export const isEqual2 = (s1, s2) =>
+    isAtom(s1) && isAtom(s2) ? s1 === s2
+    : isAtom(s1) || isAtom(s2) ? false
+    : isDeepEqual(s1, s2);
+
+export const isDeepEqual = (l1, l2) =>
+    isEmpty(l1) && isEmpty(l2) ? true
+    : isEmpty(l1) || isEmpty(l2) ? false
+    : isEqual2(car(l1), car(l2)) && isDeepEqual(cdr(l1), cdr(l2));
+
+export const removeMember2 = (s, l) =>
+    isEmpty(l) ? []
+    : isEqual2(car(l), s) ? cdr(l)
+    : cons(car(l), removeMember2(s, cdr(l)));

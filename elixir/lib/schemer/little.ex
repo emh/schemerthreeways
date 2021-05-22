@@ -90,6 +90,9 @@ defmodule Schemer.Little do
 
     iex> Schemer.Little.rember(:and, [:bacon, :lettuce, :and, :tomato])
     [:bacon, :lettuce, :tomato]
+
+    iex> Schemer.Little.rember([:and], [:bacon, :lettuce, [:and], :tomato])
+    [:bacon, :lettuce, :tomato]
   """
   def rember(_, []), do: []
 

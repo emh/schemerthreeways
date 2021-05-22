@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 
-import { isAtom, isEmpty, car, cdr, cons, isListOfAtoms, isMember, removeMember, firsts, insertRight, insertLeft, subst, subst2, multiRemoveMember, multiInsertRight, multiInsertLeft, multiSubst, add1, sub1, isZero, plus, minus, addTup, mult, tupPlus, isGreater, isLess, isEqual, expt, div, length, pick, removePick, noNums, allNums, occur, removeMemberAll, insertRightAll, occurAll, substAll, insertLeftAll, memberAll, leftMost } from '../src/little.js';
+import { isAtom, isEmpty, car, cdr, cons, isListOfAtoms, isMember, removeMember, firsts, insertRight, insertLeft, subst, subst2, multiRemoveMember, multiInsertRight, multiInsertLeft, multiSubst, add1, sub1, isZero, plus, minus, addTup, mult, tupPlus, isGreater, isLess, isEqual, expt, div, length, pick, removePick, noNums, allNums, occur, removeMemberAll, insertRightAll, occurAll, substAll, insertLeftAll, memberAll, leftMost, isDeepEqual, removeMember2 } from '../src/little.js';
 
 describe('isAtom', () => {
     it('handles strings', () => {
@@ -351,5 +351,21 @@ describe('leftMost', () => {
     it('returns the left most atom in a nested list', () => {
         assert.strictEqual(leftMost([['potato'], ['chips', [['with'], 'fish'], ['chips']]]), 'potato');
         assert.strictEqual(leftMost([[['hot'], ['tuna', ['and']]], 'cheese']), 'hot');
+    });
+});
+
+describe('isDeepEqual', () => {
+    it('compares two nested lists for equality', () => {
+        assert.strictEqual(isDeepEqual(['strawberry', 'ice', 'cream'], ['strawberry', 'cream', 'ice']), false);
+        assert.strictEqual(isDeepEqual(['banana', [['split']]], [['banana'], ['split']]), false);
+        assert.strictEqual(isDeepEqual(['beef', [['sausage']], ['and', ['soda']]], ['beef', [['salami']], ['and', ['soda']]]), false);
+        assert.strictEqual(isDeepEqual(['beef', [['sausage']], ['and', ['soda']]], ['beef', [['sausage']], ['and', ['soda']]]), true);
+    });
+});
+
+describe('removeMember2', () => {
+    it('removes the first matching member', () => {
+        assert.deepStrictEqual(removeMember2('and', ['bacon', 'lettuce', 'and', 'tomato']), ['bacon', 'lettuce', 'tomato']);
+        assert.deepStrictEqual(removeMember2(['and'], ['bacon', 'lettuce', ['and'], 'tomato']), ['bacon', 'lettuce', 'tomato']);
     });
 });

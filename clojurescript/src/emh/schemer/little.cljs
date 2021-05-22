@@ -225,3 +225,9 @@
   (cond
     (atom? (first l)) (first l)
     :else (leftmost (first l))))
+
+(defn rember2 [s l]
+  (cond
+    (empty? l) '()
+    (= (first l) s) (rest l)
+    :else (cons (first l) (rember2 s (rest l)))))
