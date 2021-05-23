@@ -1,7 +1,7 @@
 (ns emh.schemer.little-test
   (:require
     [cljs.test :refer-macros [deftest is testing run-tests]]
-    [emh.schemer.little :refer [atom? lat? member? rember firsts insert-right insert-left subst subst2 multi-rember multi-insert-right multi-insert-left multi-subst add1 sub1 plus minus add-tup mult tup-plus greater? less? equal? expt div length pick remove-pick no-nums all-nums occur rember* insert-right* occur* subst* insert-left* member* leftmost rember2, numbered?, value]]))
+    [emh.schemer.little :refer [atom? lat? member? rember firsts insert-right insert-left subst subst2 multi-rember multi-insert-right multi-insert-left multi-subst add1 sub1 plus minus add-tup mult tup-plus greater? less? equal? expt div length pick remove-pick no-nums all-nums occur rember* insert-right* occur* subst* insert-left* member* leftmost rember2, numbered?, value, set??, makeset, makeset2, subset?, eqset?, intersect?, intersect]]))
 
 (deftest atom?-test
   (is (= (atom? :turkey) true))
@@ -170,6 +170,33 @@
   (is (= (value '(1 :+ 3)) 4))
   (is (= (value '(1 :+ (3 :** 4))) 82))
   (is (= (value '((3 :* 6) :+ (8 :** 2))) 82)))
+
+(deftest set??-test
+  (is (= (set?? '(:apple :peaches :apple :plum)) false))
+  (is (= (set?? '(:apples :peaches :pears :plums)) true))
+  (is (= (set?? '()) true))
+  (is (= (set?? '(:apple 3 :pear 4 9 :apple 3 4)) false))
+  (is (= (set?? '(:apple 3 :pear 4 9)) true)))
+
+(deftest makeset-test
+  (is (= (makeset '(:apple :peach :pear :peach :plum :apple :lemon :peach)) '(:pear :plum :apple :lemon :peach))))
+
+(deftest makeset2-test
+  (is (= (makeset2 '(:apple :peach :pear :peach :plum :apple :lemon :peach)) '(:apple :peach :pear :plum :lemon)))
+  (is (= (makeset2 '(:apple 3 :pear 4 9 :apple 3 4)) '(:apple 3 :pear 4 9))))
+
+(deftest subset?-test
+  (is (= (subset? '(5 :chicken :wings) '(5 :hamburgers 2 :pieces :fried :chicken :and :light :duckling :wings)) true))
+  (is (= (subset? '(4 :pounds :of :horseradish) '(:four :pounds :chicken :and 5 :ounces :horseradish)) false)))
+
+(deftest eqset?-test
+  (is (= (eqset? '(6 :large :chickens :with :wings) '(6 :chickens :with :large :wings)) true)))
+
+(deftest intersect?-test
+  (is (= (intersect? '(:stewed :tomatoes :and :macaroni) '(:macaroni :and :cheese)), true)))
+
+(deftest intersect-test
+  (is (= (intersect '(:stewed :tomato :and :macaroni) '(:macaroni :and :cheese)) '(:and :macaroni))))
 
 (run-tests)
 

@@ -613,4 +613,105 @@ defmodule Schemer.Little do
   def value([first_sexp | [:^ | [second_sexp]]]), do: expt(value(first_sexp), value(second_sexp))
 
   def value(nexp), do: nexp
+
+  @doc ~S"""
+    Detrermines if a list is also a set
+
+    iex> Schemer.Little.set?([:apple, :peaches, :apple, :plum])
+    false
+
+    iex> Schemer.Little.set?([:apples, :peaches, :pears, :plums])
+    true
+
+    iex> Schemer.Little.set?([])
+    true
+
+    iex> Schemer.Little.set?([:apple, 3, :pear, 4, 9, :apple, 3, 4])
+    false
+
+    iex> Schemer.Little.set?([:apple, 3, :pear, 4, 9])
+    true
+  """
+  def set?([]), do: true
+
+  def set?([head | tail]) do
+    cond do
+      member?(head, tail) -> false
+      true -> set?(tail)
+    end
+  end
+
+  @doc ~S"""
+    Creates a set from a list
+
+    iex> Schemer.Little.make_set([:apple, :peach, :pear, :peach, :plum, :apple, :lemon, :peach])
+    [:pear, :plum, :apple, :lemon, :peach]
+  """
+  def make_set([]), do: []
+
+  def make_set([head | tail]) do
+    cond do
+      member?(head, tail) -> make_set(tail)
+      true -> [head | make_set(tail)]
+    end
+  end
+
+  @doc ~S"""
+    Creates a set from a list
+
+    iex> Schemer.Little.make_set2([:apple, :peach, :pear, :peach, :plum, :apple, :lemon, :peach])
+    [:apple, :peach, :pear, :plum, :lemon]
+
+    iex> Schemer.Little.make_set2([:apple, 3, :pear, 4, 9, :apple, 3, 4])
+    [:apple, 3, :pear, 4, 9]
+  """
+  def make_set2([]), do: []
+
+  def make_set2([head | tail]), do: [head | multi_rember(head, make_set2(tail))]
+
+  @doc ~S"""
+    Tests if one set is a subset of another
+
+    iex> Schemer.Little.subset?([5, :chicken, :wings], [5, :hamburgers, 2, :pieces, :fried, :chicken, :and, :light, :duckling, :wings])
+    true
+
+    iex> Schemer.Little.subset?([4, :pounds, :of, :horseradish], [:four, :pounds, :chicken, :and, 5, :ounces, :horseradish])
+    false
+  """
+  def subset?([], _), do: true
+
+  def subset?([head | tail], set2), do: member?(head, set2) && subset?(tail, set2)
+
+  @doc ~S"""
+    Tests if two sets havbe the same members
+
+    iex> Schemer.Little.equal_sets?([6, :large, :chickens, :with, :wings], [6, :chickens, :with, :large, :wings])
+    true
+  """
+  def equal_sets?(set1, set2), do: subset?(set1, set2) && subset?(set2, set1)
+
+  @doc ~S"""
+    Tests if at least one atom from one list is a member of another list
+
+    iex> Schemer.Little.intersect?([:stewed, :tomatoes, :and, :macaroni], [:macaroni, :and, :cheese])
+    true
+  """
+  def intersect?([], _), do: true
+
+  def intersect?([head | tail], set2), do: member?(head, set2) || intersect?(tail, set2)
+
+  @doc ~S"""
+    Returns the intersection of two lists
+
+    iex> Schemer.Little.intersect([:stewed, :tomatoes, :and, :macaroni], [:macaroni, :and, :cheese])
+    [:and, :macaroni]
+  """
+  def intersect([], _), do: []
+
+  def intersect([head | tail], set2) do
+    cond do
+      member?(head, set2) -> [head | intersect(tail, set2)]
+      true -> intersect(tail, set2)
+    end
+  end
 end

@@ -251,4 +251,41 @@
     (= (operator nexp) :*) (mult (value (first-sexp nexp)) (value (second-sexp nexp)))
     :else (expt (value (first-sexp nexp)) (value (second-sexp nexp)))))
 
+(defn set?? [lat]
+  (cond
+    (empty? lat) true
+    (member? (first lat) (rest lat)) false
+    :else (set?? (rest lat))))
 
+(defn makeset [lat]
+  (cond
+    (empty? lat) []
+    (member? (first lat) (rest lat)) (makeset (rest lat))
+    :else (cons (first lat) (makeset (rest lat)))))
+
+(defn makeset2 [lat]
+  (cond
+    (empty? lat) []
+    :else (cons (first lat) (multi-rember (first lat) (makeset2 (rest lat))))))
+
+(defn subset? [set1 set2]
+  (cond
+    (empty? set1) true
+    :else (and
+      (member? (first set1) set2)
+      (subset? (rest set1) set2))))
+
+(defn eqset? [set1 set2] (and (subset? set1 set2) (subset? set2 set1)))
+
+(defn intersect? [set1 set2]
+  (cond
+    (empty? set1) false
+    :else (or
+      (member? (first set1) set2)
+      (intersect? (rest set1) set2))))
+
+(defn intersect [set1 set2]
+  (cond
+    (empty? set1) '()
+    (member? (first set1) set2) (cons (first set1) (intersect (rest set1) set2))
+    :else (intersect (rest set1) set2)))

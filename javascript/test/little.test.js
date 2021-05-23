@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 
-import { isAtom, isEmpty, car, cdr, cons, isListOfAtoms, isMember, removeMember, firsts, insertRight, insertLeft, subst, subst2, multiRemoveMember, multiInsertRight, multiInsertLeft, multiSubst, add1, sub1, isZero, plus, minus, addTup, mult, tupPlus, isGreater, isLess, isEqual, expt, div, length, pick, removePick, noNums, allNums, occur, removeMemberAll, insertRightAll, occurAll, substAll, insertLeftAll, memberAll, leftMost, isDeepEqual, removeMember2, isNumbered, value } from '../src/little.js';
+import { isAtom, isEmpty, car, cdr, cons, isListOfAtoms, isMember, removeMember, firsts, insertRight, insertLeft, subst, subst2, multiRemoveMember, multiInsertRight, multiInsertLeft, multiSubst, add1, sub1, isZero, plus, minus, addTup, mult, tupPlus, isGreater, isLess, isEqual, expt, div, length, pick, removePick, noNums, allNums, occur, removeMemberAll, insertRightAll, occurAll, substAll, insertLeftAll, memberAll, leftMost, isDeepEqual, removeMember2, isNumbered, value, isSet, makeSet, makeSet2, isSubset, isEqualSets, doesIntersect, intersect } from '../src/little.js';
 
 describe('isAtom', () => {
     it('handles strings', () => {
@@ -384,5 +384,53 @@ describe('value', () => {
         assert.strictEqual(value([1, '+', 3]), 4);
         assert.strictEqual(value([1, '+', [3, '^', 4]]), 82);
         assert.strictEqual(value([[3, '*', 6], '+', [8, '^', 2]]), 82);
+    });
+});
+
+describe('isSet', () => {
+    it('determines if the list is also a set', () => {
+        assert.strictEqual(isSet(['apple', 'peaches', 'apple', 'plum']), false);
+        assert.strictEqual(isSet(['apples', 'peaches', 'pears', 'plums']), true);
+        assert.strictEqual(isSet([]), true);
+        assert.strictEqual(isSet(['apple', 3, 'pear', 4, 9, 'apple', 3, 4]), false);
+        assert.strictEqual(isSet(['apple', 3, 'pear', 4, 9]), true);
+    });
+});
+
+describe('makeSet', () => {
+    it('creates a set from a list', () => {
+        assert.deepStrictEqual(makeSet(['apple', 'peach', 'pear', 'peach', 'plum', 'apple', 'lemon', 'peach']), ['pear', 'plum', 'apple', 'lemon', 'peach']);
+    });
+});
+
+describe('makeSet2', () => {
+    it('creates a set from a list', () => {
+        assert.deepStrictEqual(makeSet2(['apple', 'peach', 'pear', 'peach', 'plum', 'apple', 'lemon', 'peach']), ['apple', 'peach', 'pear', 'plum', 'lemon']);
+        assert.deepStrictEqual(makeSet2(['apple', 3, 'pear', 4, 9, 'apple', 3, 4]), ['apple', 3, 'pear', 4, 9]);
+    });
+});
+
+describe('isSubset', () => {
+    it('tests if one set is a subset of another', () => {
+        assert.strictEqual(isSubset([5, 'chicken', 'wings'], [5, 'hamburgers', 2, 'pieces', 'fried', 'chicken', 'and', 'light', 'duckling', 'wings']), true);
+        assert.strictEqual(isSubset([4, 'pounds', 'of', 'horseradish'], ['four', 'pounds', 'chicken', 'and', 5, 'ounces', 'horseradish']), false);
+    });
+});
+
+describe('isEqualSets', () => {
+    it('tests if two sets have the same members', () => {
+        assert.strictEqual(isEqualSets([6, 'large', 'chickens', 'with', 'wings'], [6, 'chickens', 'with', 'large', 'wings']), true);
+    });
+});
+
+describe('doesIntersect', () => {
+    it('tests if at least one atom from one list is a member of another list', () => {
+        assert.strictEqual(doesIntersect(['stewed', 'tomatoes', 'and', 'macaroni'], ['macaroni', 'and', 'cheese']), true);
+    });
+});
+
+describe('intersect', () => {
+    it('returns the intersection of two lists', () => {
+        assert.deepStrictEqual(intersect(['stewed', 'tomato', 'and', 'macaroni'], ['macaroni', 'and', 'cheese']), ['and', 'macaroni']);
     });
 });

@@ -224,3 +224,32 @@ export const value = (nexp) =>
     : operator(nexp) === '-' ? minus(value(firstSubExp(nexp)), value(secondSubExp(nexp)))
     : operator(nexp) === '*' ? mult(value(firstSubExp(nexp)), value(secondSubExp(nexp)))
     : expt(value(firstSubExp(nexp)), value(secondSubExp(nexp)));
+
+export const isSet = (lat) =>
+    isEmpty(lat) ? true
+    : isMember(car(lat), cdr(lat)) ? false
+    : isSet(cdr(lat));
+
+export const makeSet = (lat) =>
+    isEmpty(lat) ? []
+    : isMember(car(lat), cdr(lat)) ? makeSet(cdr(lat))
+    : cons(car(lat), makeSet(cdr(lat)));
+
+export const makeSet2 = (lat) =>
+    isEmpty(lat) ? []
+    : cons(car(lat), multiRemoveMember(car(lat), makeSet2(cdr(lat))));
+
+export const isSubset = (set1, set2) =>
+    isEmpty(set1) ? true
+    : isMember(car(set1), set2) && isSubset(cdr(set1), set2);
+
+export const isEqualSets = (set1, set2) => isSubset(set1, set2) && isSubset(set2, set1);
+
+export const doesIntersect = (set1, set2) =>
+    isEmpty(set1) ? false
+    : isMember(car(set1), set2) || doesIntersect(cdr(set1), set2);
+
+export const intersect = (set1, set2) =>
+    isEmpty(set1) ? []
+    : isMember(car(set1), set2) ? cons(car(set1), intersect(cdr(set1), set2))
+    : intersect(cdr(set1), set2);
