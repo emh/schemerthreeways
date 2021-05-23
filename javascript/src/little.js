@@ -207,3 +207,20 @@ export const removeMember2 = (s, l) =>
     isEmpty(l) ? []
     : isEqual2(car(l), s) ? cdr(l)
     : cons(car(l), removeMember2(s, cdr(l)));
+
+export const isNumbered = (aexp) =>
+    isAtom(aexp) ? isNumber(aexp)
+    : isNumbered(car(aexp)) && isNumbered(car(cdr(cdr(aexp))));
+
+export const firstSubExp = (nexp) => car(nexp);
+
+export const operator = (nexp) => car(cdr(nexp));
+
+export const secondSubExp = (nexp) => car(cdr(cdr(nexp)));
+
+export const value = (nexp) =>
+    isAtom(nexp) ? nexp
+    : operator(nexp) === '+' ? plus(value(firstSubExp(nexp)), value(secondSubExp(nexp)))
+    : operator(nexp) === '-' ? minus(value(firstSubExp(nexp)), value(secondSubExp(nexp)))
+    : operator(nexp) === '*' ? mult(value(firstSubExp(nexp)), value(secondSubExp(nexp)))
+    : expt(value(firstSubExp(nexp)), value(secondSubExp(nexp)));

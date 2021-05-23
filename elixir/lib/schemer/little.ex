@@ -572,4 +572,45 @@ defmodule Schemer.Little do
       true -> left_most(head)
     end
   end
+
+  @doc ~S"""
+    Tests that an arithmetic expression contains only numbers
+
+    iex> Schemer.Little.numbered?([1, :+, 3])
+    true
+
+    iex> Schemer.Little.numbered?([2, :*, :sausage])
+    false
+
+    iex> Schemer.Little.numbered?([3, :+, [4, :*, 5]])
+    true
+
+    iex> Schemer.Little.numbered?([2, :*, [:sausage, :and, :cheese]])
+    false
+  """
+  def numbered?([a | [_ | [b]]]), do: numbered?(a) && numbered?(b)
+
+  def numbered?(aexp), do: is_number(aexp)
+
+  @doc ~S"""
+    Calculates the value of a numeric expression
+
+    iex> Schemer.Little.value([1, :+, 3])
+    4
+
+    iex> Schemer.Little.value([1, :+, [3, :^, 4]])
+    82
+
+    iex> Schemer.Little.value([[3, :*, 6], :+, [8, :^, 2]])
+    82
+  """
+  def value([first_sexp | [:+ | [second_sexp]]]), do: plus(value(first_sexp), value(second_sexp))
+
+  def value([first_sexp | [:- | [second_sexp]]]), do: minus(value(first_sexp), value(second_sexp))
+
+  def value([first_sexp | [:* | [second_sexp]]]), do: mult(value(first_sexp), value(second_sexp))
+
+  def value([first_sexp | [:^ | [second_sexp]]]), do: expt(value(first_sexp), value(second_sexp))
+
+  def value(nexp), do: nexp
 end

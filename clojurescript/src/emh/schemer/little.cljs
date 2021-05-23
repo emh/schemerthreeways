@@ -231,3 +231,24 @@
     (empty? l) '()
     (= (first l) s) (rest l)
     :else (cons (first l) (rember2 s (rest l)))))
+
+(defn numbered? [aexp]
+  (cond
+    (atom? aexp) (number? aexp)
+    :alse (and (numbered? (first aexp)) (numbered? (first (rest (rest aexp)))))))
+
+(defn first-sexp [nexp] (first nexp))
+
+(defn operator [nexp] (first (rest nexp)))
+
+(defn second-sexp [nexp] (first (rest (rest nexp))))
+
+(defn value [nexp]
+  (cond
+    (atom? nexp) nexp
+    (= (operator nexp) :+) (plus (value (first-sexp nexp)) (value (second-sexp nexp)))
+    (= (operator nexp) :-) (minus (value (first-sexp nexp)) (value (second-sexp nexp)))
+    (= (operator nexp) :*) (mult (value (first-sexp nexp)) (value (second-sexp nexp)))
+    :else (expt (value (first-sexp nexp)) (value (second-sexp nexp)))))
+
+

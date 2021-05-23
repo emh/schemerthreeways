@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 
-import { isAtom, isEmpty, car, cdr, cons, isListOfAtoms, isMember, removeMember, firsts, insertRight, insertLeft, subst, subst2, multiRemoveMember, multiInsertRight, multiInsertLeft, multiSubst, add1, sub1, isZero, plus, minus, addTup, mult, tupPlus, isGreater, isLess, isEqual, expt, div, length, pick, removePick, noNums, allNums, occur, removeMemberAll, insertRightAll, occurAll, substAll, insertLeftAll, memberAll, leftMost, isDeepEqual, removeMember2 } from '../src/little.js';
+import { isAtom, isEmpty, car, cdr, cons, isListOfAtoms, isMember, removeMember, firsts, insertRight, insertLeft, subst, subst2, multiRemoveMember, multiInsertRight, multiInsertLeft, multiSubst, add1, sub1, isZero, plus, minus, addTup, mult, tupPlus, isGreater, isLess, isEqual, expt, div, length, pick, removePick, noNums, allNums, occur, removeMemberAll, insertRightAll, occurAll, substAll, insertLeftAll, memberAll, leftMost, isDeepEqual, removeMember2, isNumbered, value } from '../src/little.js';
 
 describe('isAtom', () => {
     it('handles strings', () => {
@@ -367,5 +367,22 @@ describe('removeMember2', () => {
     it('removes the first matching member', () => {
         assert.deepStrictEqual(removeMember2('and', ['bacon', 'lettuce', 'and', 'tomato']), ['bacon', 'lettuce', 'tomato']);
         assert.deepStrictEqual(removeMember2(['and'], ['bacon', 'lettuce', ['and'], 'tomato']), ['bacon', 'lettuce', 'tomato']);
+    });
+});
+
+describe('isNumbered', () => {
+    it('tests that an arithmetic expression contains only numbers', () => {
+        assert.strictEqual(isNumbered([1, '+', 3]), true);
+        assert.strictEqual(isNumbered([2, '*', 'sausage']), false);
+        assert.strictEqual(isNumbered([3, '+', [4, '*', 5]]), true);
+        assert.strictEqual(isNumbered([2, '*', ['sasuage', 'and', 'cheese']]), false);
+    });
+});
+
+describe('value', () => {
+    it('calculates the value of a numeric expression', () => {
+        assert.strictEqual(value([1, '+', 3]), 4);
+        assert.strictEqual(value([1, '+', [3, '^', 4]]), 82);
+        assert.strictEqual(value([[3, '*', 6], '+', [8, '^', 2]]), 82);
     });
 });

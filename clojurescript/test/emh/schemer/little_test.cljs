@@ -1,7 +1,7 @@
 (ns emh.schemer.little-test
   (:require
     [cljs.test :refer-macros [deftest is testing run-tests]]
-    [emh.schemer.little :refer [atom? lat? member? rember firsts insert-right insert-left subst subst2 multi-rember multi-insert-right multi-insert-left multi-subst add1 sub1 plus minus add-tup mult tup-plus greater? less? equal? expt div length pick remove-pick no-nums all-nums occur rember* insert-right* occur* subst* insert-left* member* leftmost rember2]]))
+    [emh.schemer.little :refer [atom? lat? member? rember firsts insert-right insert-left subst subst2 multi-rember multi-insert-right multi-insert-left multi-subst add1 sub1 plus minus add-tup mult tup-plus greater? less? equal? expt div length pick remove-pick no-nums all-nums occur rember* insert-right* occur* subst* insert-left* member* leftmost rember2, numbered?, value]]))
 
 (deftest atom?-test
   (is (= (atom? :turkey) true))
@@ -159,6 +159,17 @@
 (deftest rember2-test
   (is (= (rember2 :and '(:bacon :lettuce :and :tomato)) '(:bacon :lettuce :tomato)))
   (is (= (rember2 '(:and) '(:bacon :lettuce (:and) :tomato)) '(:bacon :lettuce :tomato))))
+
+(deftest numbered?-test
+  (is (= (numbered? '(1 :+ 3)) true))
+  (is (= (numbered? '(2 :* :sausage)) false))
+  (is (= (numbered? '(3 :+ (4 :* 5))) true))
+  (is (= (numbered? '(2 :* (:sausage :and :cheese))) false)))
+
+(deftest value-test
+  (is (= (value '(1 :+ 3)) 4))
+  (is (= (value '(1 :+ (3 :** 4))) 82))
+  (is (= (value '((3 :* 6) :+ (8 :** 2))) 82)))
 
 (run-tests)
 
