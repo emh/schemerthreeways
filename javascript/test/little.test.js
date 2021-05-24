@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 
-import { isAtom, isEmpty, car, cdr, cons, isListOfAtoms, isMember, removeMember, firsts, insertRight, insertLeft, subst, subst2, multiRemoveMember, multiInsertRight, multiInsertLeft, multiSubst, add1, sub1, isZero, plus, minus, addTup, mult, tupPlus, isGreater, isLess, isEqual, expt, div, length, pick, removePick, noNums, allNums, occur, removeMemberAll, insertRightAll, occurAll, substAll, insertLeftAll, memberAll, leftMost, isDeepEqual, removeMember2, isNumbered, value, isSet, makeSet, makeSet2, isSubset, isEqualSets, doesIntersect, intersect } from '../src/little.js';
+import { isAtom, isEmpty, car, cdr, cons, isListOfAtoms, isMember, removeMember, firsts, insertRight, insertLeft, subst, subst2, multiRemoveMember, multiInsertRight, multiInsertLeft, multiSubst, add1, sub1, isZero, plus, minus, addTup, mult, tupPlus, isGreater, isLess, isEqual, expt, div, length, pick, removePick, noNums, allNums, occur, removeMemberAll, insertRightAll, occurAll, substAll, insertLeftAll, memberAll, leftMost, isDeepEqual, removeMember2, isNumbered, value, isSet, makeSet, makeSet2, isSubset, isEqualSets, doesIntersect, intersect, union, difference, intersectAll, isAPair, isFun, revRel, isFullFun, isOneToOne } from '../src/little.js';
 
 describe('isAtom', () => {
     it('handles strings', () => {
@@ -432,5 +432,67 @@ describe('doesIntersect', () => {
 describe('intersect', () => {
     it('returns the intersection of two lists', () => {
         assert.deepStrictEqual(intersect(['stewed', 'tomato', 'and', 'macaroni'], ['macaroni', 'and', 'cheese']), ['and', 'macaroni']);
+    });
+});
+
+describe('union', () => {
+    it('returns the union of two sets', () => {
+        assert.deepStrictEqual(union(['stewed', 'tomato', 'and', 'macaroni', 'casserole'], ['macaroni', 'and', 'cheese']), ['stewed', 'tomato', 'casserole', 'macaroni', 'and', 'cheese']);
+    });
+});
+
+describe('difference', () => {
+    it('returns a list of elements from the first set that are not present in the second set', () => {
+        assert.deepStrictEqual(difference(['stewed', 'tomato', 'and', 'macaroni', 'casserole'], ['macaroni', 'and', 'cheese']), ['stewed', 'tomato', 'casserole']);
+    });
+});
+
+describe('intersectAll', () => {
+    it('returns the intersection of a list of sets', () => {
+        assert.deepStrictEqual(intersectAll([['a', 'b', 'c'], ['c', 'a', 'd', 'e'], ['e', 'f', 'g', 'h', 'a', 'b']]), ['a']);
+        assert.deepStrictEqual(intersectAll([[6, 'pears', 'and'], [3, 'peaches', 'and', 6, 'peppers'], [8, 'pears', 'and', 6, 'plums'], ['and', 6, 'prunes', 'with', 'some', 'apples']]), [6, 'and']);
+    });
+});
+
+describe('isAPair', () => {
+    it('tests if a list has only two items', () => {
+        assert.strictEqual(isAPair(['pear', 'pear']), true);
+        assert.strictEqual(isAPair([3, 7]), true);
+        assert.strictEqual(isAPair([[2], ['pear']]), true);
+        assert.strictEqual(isAPair(['full', ['house']]), true);
+        assert.strictEqual(isAPair([]), false);
+        assert.strictEqual(isAPair([1]), false);
+        assert.strictEqual(isAPair([1, 2, 3]), false);
+    });
+});
+
+describe('isFun', () => {
+    it('tests if a list represents a function', () => {
+        assert.strictEqual(isFun([[4, 3], [4, 2], [7, 6], [6, 2], [3, 4]]), false);
+        assert.strictEqual(isFun([[4, 3], [8, 2], [7, 6], [6, 2], [3, 4]]), true);
+    });
+});
+
+describe('revRel', () => {
+    it('reverses a relation (list of pairs)', () => {
+        assert.deepStrictEqual(revRel([[8, 'a'], ['pumpkin', 'pie'], ['got', 'sick']]), [['a', 8], ['pie', 'pumpkin'], ['sick', 'got']]);
+    });
+});
+
+describe('isFullFun', () => {
+    it('tests if a function is a full function - all the seconds of the pairs are unique', () => {
+        assert.strictEqual(isFullFun([[8, 3], [4, 2], [7, 6], [6, 2], [3, 4]]), false);
+        assert.strictEqual(isFullFun([[8, 3], [4, 8], [7, 6], [6, 2], [3, 4]]), true);
+        assert.strictEqual(isFullFun([['grape', 'raisin'], ['plum', 'prune'], ['stewed', 'prune']]), false);
+        assert.strictEqual(isFullFun([['grape', 'raisin'], ['plum', 'prune'], ['stewed', 'grape']]), true);
+    });
+});
+
+describe('isOneToOne', () => {
+    it('tests if a function ios a full function - all the seconds of the pairs are unique', () => {
+        assert.strictEqual(isOneToOne([[8, 3], [4, 2], [7, 6], [6, 2], [3, 4]]), false);
+        assert.strictEqual(isOneToOne([[8, 3], [4, 8], [7, 6], [6, 2], [3, 4]]), true);
+        assert.strictEqual(isOneToOne([['grape', 'raisin'], ['plum', 'prune'], ['stewed', 'prune']]), false);
+        assert.strictEqual(isOneToOne([['grape', 'raisin'], ['plum', 'prune'], ['stewed', 'grape']]), true);
     });
 });

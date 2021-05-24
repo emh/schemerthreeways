@@ -253,3 +253,44 @@ export const intersect = (set1, set2) =>
     isEmpty(set1) ? []
     : isMember(car(set1), set2) ? cons(car(set1), intersect(cdr(set1), set2))
     : intersect(cdr(set1), set2);
+
+export const union = (set1, set2) =>
+    isEmpty(set1) ? set2
+    : isMember(car(set1), set2) ? union(cdr(set1), set2)
+    : cons(car(set1), union(cdr(set1), set2));
+
+export const difference = (set1, set2) =>
+    isEmpty(set1) ? []
+    : isMember(car(set1), set2) ? difference(cdr(set1), set2)
+    : cons(car(set1), difference(cdr(set1), set2));
+
+export const intersectAll = (sets) =>
+    isEmpty(cdr(sets)) ? car(sets)
+    : intersect(car(sets), intersectAll(cdr(sets)));
+
+export const isAPair = (l) =>
+    isAtom(l) ? false
+    : isEmpty(l) ? false
+    : isEmpty(cdr(l)) ? false
+    : isEmpty(cdr(cdr(l))) ? true
+    : false;
+
+export const isFun = (rel) => isSet(firsts(rel));
+
+export const build = (s1, s2) => cons(s1, cons(s2, []));
+
+export const second = (pair) => car(cdr(pair));
+
+export const revPair = (pair) => build(second(pair), car(pair));
+
+export const revRel = (rel) =>
+    isEmpty(rel) ? []
+    : cons(revPair(car(rel)), revRel(cdr(rel)));
+
+export const seconds = (lat) =>
+    isEmpty(lat) ? []
+    : cons(second(car(lat)), seconds(cdr(lat)));
+
+export const isFullFun = (fun) => isSet(seconds(fun));
+
+export const isOneToOne = (fun) => isFun(revRel(fun));

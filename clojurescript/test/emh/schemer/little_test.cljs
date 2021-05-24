@@ -1,7 +1,7 @@
 (ns emh.schemer.little-test
   (:require
     [cljs.test :refer-macros [deftest is testing run-tests]]
-    [emh.schemer.little :refer [atom? lat? member? rember firsts insert-right insert-left subst subst2 multi-rember multi-insert-right multi-insert-left multi-subst add1 sub1 plus minus add-tup mult tup-plus greater? less? equal? expt div length pick remove-pick no-nums all-nums occur rember* insert-right* occur* subst* insert-left* member* leftmost rember2, numbered?, value, set??, makeset, makeset2, subset?, eqset?, intersect?, intersect]]))
+    [emh.schemer.little :refer [atom? lat? member? rember firsts insert-right insert-left subst subst2 multi-rember multi-insert-right multi-insert-left multi-subst add1 sub1 plus minus add-tup mult tup-plus greater? less? equal? expt div length pick remove-pick no-nums all-nums occur rember* insert-right* occur* subst* insert-left* member* leftmost rember2, numbered?, value, set??, makeset, makeset2, subset?, eqset?, intersect?, intersect, union, difference, intersect-all, a-pair?, fun?, rev-rel, full-fun?, one-to-one?]]))
 
 (deftest atom?-test
   (is (= (atom? :turkey) true))
@@ -197,6 +197,45 @@
 
 (deftest intersect-test
   (is (= (intersect '(:stewed :tomato :and :macaroni) '(:macaroni :and :cheese)) '(:and :macaroni))))
+
+(deftest union-test
+  (is (= (union '(:stewed :tomatoes :and :macaroni :casserole) '(:macaroni :and :cheese)) '(:stewed :tomatoes :casserole :macaroni :and :cheese))))
+
+(deftest difference-test
+  (is (= (difference '(:stewed :tomatoes :and :macaroni :casserole) '(:macaroni :and :cheese)) '(:stewed :tomatoes :casserole))))
+
+(deftest inmtersect-all
+  (is (= (intersect-all '((:a :b :c) (:c :a :d :e) (:e :f :g :h :a :b))) '(:a)))
+  (is (= (intersect-all '((6 :pears :and) (3 :peaches :and 6 :peppers) (8 :pears :and 6 :plums) (:and 6 :prunes :with :some :apples))) '(6 :and))))
+
+(deftest a-pair?-test
+  (is (= (a-pair? '(:pear :pear)) true))
+  (is (= (a-pair? '(3 7)) true))
+  (is (= (a-pair? '((2) (:pair))) true))
+  (is (= (a-pair? '(:full (:house))) true))
+  (is (= (a-pair? '()) false))
+  (is (= (a-pair? '(1)) false))
+  (is (= (a-pair? '(1 2 3)) false)))
+
+(deftest fun?-test
+  (is (= (fun? '((4 3) (4 2) (7 6) (6 2) (3 4))) false))
+  (is (= (fun? '((8 3) (4 2) (7 6) (6 2) (3 4))) true))
+  (is (= (fun? '((:d 4) (:b 0) (:b 9) (:e 5) (:g 4))) false)))
+
+(deftest rev-rel-test
+  (is (= (rev-rel '((8 :a) (:pumpkin :pie) (:got :sick))) '((:a 8) (:pie :pumpkin) (:sick :got)))))
+
+(deftest full-fun?-test
+  (is (= (full-fun? '((8 3) (4 2) (7 6) (6 2) (3 4))) false))
+  (is (= (full-fun? '((8 3) (4 8) (7 6) (6 2) (3 4))) true))
+  (is (= (full-fun? '((:grape :raisin) (:plum :prune) (:stewed :prune))) false))
+  (is (= (full-fun? '((:grape :raisin) (:plum :prune) (:stewed :grape))) true)))
+
+(deftest one-to-one?-test
+  (is (= (one-to-one? '((8 3) (4 2) (7 6) (6 2) (3 4))) false))
+  (is (= (one-to-one? '((8 3) (4 8) (7 6) (6 2) (3 4))) true))
+  (is (= (one-to-one? '((:grape :raisin) (:plum :prune) (:stewed :prune))) false))
+  (is (= (one-to-one? '((:grape :raisin) (:plum :prune) (:stewed :grape))) true)))
 
 (run-tests)
 

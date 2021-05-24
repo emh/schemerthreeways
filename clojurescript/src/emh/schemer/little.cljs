@@ -289,3 +289,51 @@
     (empty? set1) '()
     (member? (first set1) set2) (cons (first set1) (intersect (rest set1) set2))
     :else (intersect (rest set1) set2)))
+
+(defn union [set1 set2]
+  (cond
+    (empty? set1) set2
+    (member? (first set1) set2) (union (rest set1) set2)
+    :else (cons (first set1) (union (rest set1) set2))))
+
+(defn difference [set1 set2]
+  (let [head (first set1)
+        tail (rest set1)]
+    (cond
+      (empty? set1) []
+      (member? head set2) (difference tail set2)
+      :else (cons head (difference tail set2)))))
+
+(defn intersect-all [lsets]
+  (cond
+    (empty? (rest lsets)) (first lsets)
+    :else (intersect (first lsets) (intersect-all (rest lsets)))))
+
+(defn a-pair? [l]
+  (cond
+    (atom? l) false
+    (empty? l) false
+    (empty? (rest l)) false
+    (empty? (rest (rest l))) true
+    :else false))
+
+(defn fun? [rel] (set?? (firsts rel)))
+
+(defn build [s1 s2] (cons s1 (cons s2 '())))
+
+(defn rev-pair [pair] (build (second pair) (first pair)))
+
+(defn rev-rel [rel]
+  (cond
+    (empty? rel) []
+    :else (cons (rev-pair (first rel)) (rev-rel (rest rel)))))
+
+(defn seconds [lat]
+  (cond
+    (empty? lat) []
+    :else (cons (second (first lat)) (seconds (rest lat)))))
+
+(defn full-fun? [fun] (set?? (seconds fun)))
+
+(defn one-to-one? [fun] (fun? (rev-rel fun)))
+

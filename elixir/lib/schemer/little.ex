@@ -629,6 +629,7 @@ defmodule Schemer.Little do
     iex> Schemer.Little.set?([:apple, 3, :pear, 4, 9, :apple, 3, 4])
     false
 
+
     iex> Schemer.Little.set?([:apple, 3, :pear, 4, 9])
     true
   """
@@ -701,7 +702,7 @@ defmodule Schemer.Little do
   def intersect?([head | tail], set2), do: member?(head, set2) || intersect?(tail, set2)
 
   @doc ~S"""
-    Returns the intersection of two lists
+    Returns the intersection of two sets
 
     iex> Schemer.Little.intersect([:stewed, :tomatoes, :and, :macaroni], [:macaroni, :and, :cheese])
     [:and, :macaroni]
@@ -714,4 +715,155 @@ defmodule Schemer.Little do
       true -> intersect(tail, set2)
     end
   end
+
+  @doc ~S"""
+    Returns the union of two sets
+
+    iex> Schemer.Little.union([:stewed, :tomatoes, :and, :macaroni, :casserole], [:macaroni, :and, :cheese])
+    [:stewed, :tomatoes, :casserole, :macaroni, :and, :cheese]
+  """
+  def union([], set2), do: set2
+
+  def union([head | tail], set2) do
+    cond do
+      member?(head, set2) -> union(tail, set2)
+      true -> [head | union(tail, set2)]
+    end
+  end
+
+  @doc ~S"""
+    Returns the elements of set1 that are not present in set2
+
+    iex> Schemer.Little.difference([:stewed, :tomatoes, :and, :macaroni, :casserole], [:macaroni, :and, :cheese])
+    [:stewed, :tomatoes, :casserole]
+  """
+  def difference([], _), do: []
+
+  def difference([head | tail], set2) do
+    cond do
+      member?(head, set2) -> difference(tail, set2)
+      true -> [head | difference(tail, set2)]
+    end
+  end
+
+  @doc ~S"""
+    Returns the intersection of a list of sets
+
+    iex> Schemer.Little.intersect_all([[:a, :b, :c], [:c, :a, :d, :e], [:e, :f, :g, :h, :a, :b]])
+    [:a]
+
+    iex> Schemer.Little.intersect_all([[6, :pears, :and], [3, :peaches, :and, 6, :peppers], [8, :pears, :and, 6, :plums], [:and, 6, :prunes, :with, :some, :apples]])
+    [6, :and]
+  """
+  def intersect_all([head | []]), do: head
+
+  def intersect_all([head | tail]), do: intersect(head, intersect_all(tail))
+
+  @doc ~S"""
+    Tests if a list has just two items
+
+    iex> Schemer.Little.a_pair?([:pear, :pear])
+    true
+
+    iex> Schemer.Little.a_pair?([3, 7])
+    true
+
+    iex> Schemer.Little.a_pair?([[2], [:pair]])
+    true
+
+    iex> Schemer.Little.a_pair?([:full, [:house]])
+    true
+
+    iex> Schemer.Little.a_pair?([])
+    false
+
+    iex> Schemer.Little.a_pair?([1])
+    false
+
+    iex> Schemer.Little.a_pair?([1, 2, 3])
+    false
+  """
+  def a_pair?([]), do: false
+
+  def a_pair?([_ | []]), do: false
+
+  def a_pair?([_, _ | []]), do: true
+
+  def a_pair?([_ | [_ | _]]), do: false
+
+  def a_pair(_), do: false
+
+  @doc ~S"""
+    Tests if a relation is a function (first items of all pairs are unique)
+
+    iex> Schemer.Little.fun?([[4, 3], [4, 2], [7, 6], [6, 2], [3, 4]])
+    false
+
+    iex> Schemer.Little.fun?([[4, 3], [8, 2], [7, 6], [6, 2], [3, 4]])
+    true
+  """
+  def fun?(rel), do:
+    rel
+    |> firsts
+    |> set?
+
+  def build(s1, s2), do: [s1, s2]
+
+  def second([_, b | _]), do: b
+
+  def rev_pair([a, b]), do: [b, a]
+
+  @doc ~S"""
+    Flips the pairs in a relation
+
+    iex> Schemer.Little.rev_rel([[8, :a], [:pumpkin, :pie], [:got, :sick]])
+    [[:a, 8], [:pie, :pumpkin], [:sick, :got]]
+  """
+  def rev_rel([]), do: []
+
+  def rev_rel([head | tail]), do: [rev_pair(head) | rev_rel(tail)]
+
+  def seconds([]), do: []
+
+  def seconds([head | tail]), do: [second(head) | seconds(tail)]
+
+  @doc ~S"""
+    tests if a function is a full function
+
+    iex> Schemer.Little.full_fun?([[8, 3], [4, 2], [7, 6], [6, 2], [3, 4]])
+    false
+
+    iex> Schemer.Little.full_fun?([[8, 3], [4, 8], [7, 6], [6, 2], [3, 4]])
+    true
+
+    iex> Schemer.Little.full_fun?([[:grape, :raisin], [:plum, :prune], [:stewed, :prune]])
+    false
+
+    iex> Schemer.Little.full_fun?([[:grape, :raisin], [:plum, :prune], [:stewed, :grape]])
+    true
+  """
+  def full_fun?(fun), do:
+    fun
+    |> seconds
+    |> set?
+
+  @doc ~S"""
+    tests if a function is a full function
+
+    iex> Schemer.Little.one_to_one?([[8, 3], [4, 2], [7, 6], [6, 2], [3, 4]])
+    false
+
+    iex> Schemer.Little.one_to_one?([[8, 3], [4, 8], [7, 6], [6, 2], [3, 4]])
+    true
+
+    iex> Schemer.Little.one_to_one?([[:grape, :raisin], [:plum, :prune], [:stewed, :prune]])
+    false
+
+    iex> Schemer.Little.one_to_one?([[:grape, :raisin], [:plum, :prune], [:stewed, :grape]])
+    true
+  """
+  def one_to_one?(fun), do:
+    fun
+    |> rev_rel
+    |> fun?
 end
