@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 
-import { isAtom, isEmpty, car, cdr, cons, isListOfAtoms, isMember, removeMember, firsts, insertRight, insertLeft, subst, subst2, multiRemoveMember, multiInsertRight, multiInsertLeft, multiSubst, add1, sub1, isZero, plus, minus, addTup, mult, tupPlus, isGreater, isLess, isEqual, expt, div, length, pick, removePick, noNums, allNums, occur, removeMemberAll, insertRightAll, occurAll, substAll, insertLeftAll, memberAll, leftMost, isDeepEqual, removeMember2, isNumbered, value, isSet, makeSet, makeSet2, isSubset, isEqualSets, doesIntersect, intersect, union, difference, intersectAll, isAPair, isFun, revRel, isFullFun, isOneToOne } from '../src/little.js';
+import { isAtom, isEmpty, car, cdr, cons, isListOfAtoms, isMember, removeMember, firsts, insertRight, insertLeft, subst, subst2, multiRemoveMember, multiInsertRight, multiInsertLeft, multiSubst, add1, sub1, isZero, plus, minus, addTup, mult, tupPlus, isGreater, isLess, isEqual, expt, div, length, pick, removePick, noNums, allNums, occur, removeMemberAll, insertRightAll, occurAll, substAll, insertLeftAll, memberAll, leftMost, isDeepEqual, removeMember2, isNumbered, value, isSet, makeSet, makeSet2, isSubset, isEqualSets, doesIntersect, intersect, union, difference, intersectAll, isAPair, isFun, revRel, isFullFun, isOneToOne, isEqual2, removeMemberFn, isEqualC, removeMemberFn2, insertRight2, insertLeft2, subst3 } from '../src/little.js';
 
 describe('isAtom', () => {
     it('handles strings', () => {
@@ -102,7 +102,7 @@ describe('insertRight', () => {
     });
 });
 
-describe('insertRight', () => {
+describe('insertLeft', () => {
     it('inserts the new atom to the left of the old atom in the list', () => {
         assert.deepStrictEqual(insertLeft('chocolate', 'fudge', ['ice', 'cream', 'with', 'fudge', 'for', 'dessert']), ['ice', 'cream', 'with', 'chocolate', 'fudge', 'for', 'dessert']);
     });
@@ -494,5 +494,52 @@ describe('isOneToOne', () => {
         assert.strictEqual(isOneToOne([[8, 3], [4, 8], [7, 6], [6, 2], [3, 4]]), true);
         assert.strictEqual(isOneToOne([['grape', 'raisin'], ['plum', 'prune'], ['stewed', 'prune']]), false);
         assert.strictEqual(isOneToOne([['grape', 'raisin'], ['plum', 'prune'], ['stewed', 'grape']]), true);
+    });
+});
+
+describe('removeMemberFn', () => {
+    it('removes the first item from the list that matches the atom using the supplied test function', () => {
+        assert.deepStrictEqual(removeMemberFn(isEqual, 5, [6, 2, 5, 3]), [6, 2, 3]);
+        assert.deepStrictEqual(removeMemberFn(isEqual2, 'jelly', ['jelly', 'beans', 'are', 'good']), ['beans', 'are', 'good']);
+        assert.deepStrictEqual(removeMemberFn(isDeepEqual, ['pop', 'corn'], ['lemonade', ['pop', 'corn'], 'and', ['cake']]), ['lemonade', 'and', ['cake']]);
+    });
+});
+
+describe('isEqualC', () => {
+    it('creates an equality function for a fixed value', () => {
+        const isEqualSalad = isEqualC('salad');
+
+        assert.deepStrictEqual(isEqualSalad('salad'), true);
+        assert.deepStrictEqual(isEqualSalad('tuna'), false);
+    });
+});
+
+describe('removeMemberFn2', () => {
+    it('creates a removeMember function with the specified test function', () => {
+        const removeMemberFn2isEqual = removeMemberFn2(isEqual);
+        const removeMemberFn2isEqual2 = removeMemberFn2(isEqual2);
+        const removeMemberFn2isDeepEqual = removeMemberFn2(isDeepEqual);
+
+        assert.deepStrictEqual(removeMemberFn2isEqual(5, [6, 2, 5, 3]), [6, 2, 3]);
+        assert.deepStrictEqual(removeMemberFn2isEqual2('jelly', ['jelly', 'beans', 'are', 'good']), ['beans', 'are', 'good']);
+        assert.deepStrictEqual(removeMemberFn2isDeepEqual(['pop', 'corn'], ['lemonade', ['pop', 'corn'], 'and', ['cake']]), ['lemonade', 'and', ['cake']]);
+    });
+});
+
+describe('insertRight2', () => {
+    it('uses insertG and a sequence fn to recreate the insertRight function', () => {
+        assert.deepStrictEqual(insertRight2('topping', 'fudge', ['ice', 'cream', 'with', 'fudge', 'for', 'dessert']), ['ice', 'cream', 'with', 'fudge', 'topping', 'for', 'dessert']);
+    });
+});
+
+describe('insertLeft2', () => {
+    it('uses insertG and a sequence fn to recreate the insertLeft function', () => {
+        assert.deepStrictEqual(insertLeft2('chocolate', 'fudge', ['ice', 'cream', 'with', 'fudge', 'for', 'dessert']), ['ice', 'cream', 'with', 'chocolate', 'fudge', 'for', 'dessert']);
+    });
+});
+
+describe('subst3', () => {
+    it('uses insertG and a sequence fn to recreate the subst function', () => {
+        assert.deepStrictEqual(subst3('topping', 'fudge', ['ice', 'cream', 'with', 'fudge', 'for', 'dessert']), ['ice', 'cream', 'with', 'topping', 'for', 'dessert']);
     });
 });

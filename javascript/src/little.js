@@ -294,3 +294,28 @@ export const seconds = (lat) =>
 export const isFullFun = (fun) => isSet(seconds(fun));
 
 export const isOneToOne = (fun) => isFun(revRel(fun));
+
+export const removeMemberFn = (fn, a, l) =>
+    isEmpty(l) ? []
+    : fn(car(l), a) ? cdr(l)
+    : cons(car(l), removeMemberFn(fn, a, cdr(l)));
+
+export const isEqualC = (a) => (x) => a === x;
+
+export const removeMemberFn2 = (fn) =>
+    (a, l) =>
+        isEmpty(l) ? []
+        : fn(car(l), a) ? cdr(l)
+        : cons(car(l), removeMemberFn2(fn)(a, cdr(l)));
+
+export const insertG = (seqFn) =>
+    (a, b, l) =>
+        isEmpty(l) ? []
+        : car(l) === b ? seqFn(a, b, cdr(l))
+        : cons(car(l), insertG(seqFn)(a, b, cdr(l)));
+
+export const insertRight2 = insertG((a, b, l) => cons(b, cons(a, l)));
+
+export const insertLeft2 = insertG((a, b, l) => cons(a, cons(b, l)));
+
+export const subst3 = insertG((a, b, l) => cons(a, l));

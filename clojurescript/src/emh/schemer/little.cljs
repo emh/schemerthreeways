@@ -337,3 +337,34 @@
 
 (defn one-to-one? [fun] (fun? (rev-rel fun)))
 
+(defn rember-f [test? a l]
+  (cond
+    (empty? l) []
+    (test? (first l) a) (rest l)
+    :else (cons (first l) (rember-f test? a (rest l)))))
+
+(defn eq?-c [a]
+  (fn [x] (= a x)))
+
+(defn rember-f2 [test?]
+  (fn [a l]
+    (cond
+      (empty? l) []
+      (test? (first l) a) (rest l)
+      :else (cons (first l) ((rember-f2 test?) a (rest l))))))
+
+(defn insert-g [seq-fn]
+  (fn [new old l]
+    (cond
+      (empty? l) '()
+      (= (first l) old) (seq-fn new old (rest l))
+      :else (cons (first l) ((insert-g seq-fn) new old (rest l))))))
+
+(defn insert-left2 [new old l]
+  ((insert-g #(cons %1 (cons %2 %3))) new old l))
+
+(defn insert-right2 [new old l]
+  ((insert-g #(cons %2 (cons %1 %3))) new old l))
+
+(defn subst3 [new old l]
+  ((insert-g #(cons %1 %3)) new old l))

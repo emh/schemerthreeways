@@ -866,4 +866,91 @@ defmodule Schemer.Little do
     fun
     |> rev_rel
     |> fun?
+
+  @doc ~S"""
+    removes the first member of the list that matches the supplied atom using the suplied test function
+
+    iex> Schemer.Little.remove_member_fn(&Schemer.Little.equal?/2, 5, [6, 2, 5, 3])
+    [6, 2, 3]
+
+    iex> Schemer.Little.remove_member_fn(&Schemer.Little.equal?/2, :jelly, [:jelly, :beans, :are, :good])
+    [:beans, :are, :good]
+
+    iex> Schemer.Little.remove_member_fn(&Schemer.Little.equal?/2, [:pop, :corn], [:lemonade, [:pop, :corn], :and, [:cake]])
+    [:lemonade, :and, [:cake]]
+  """
+  def remove_member_fn(_, _, []), do: []
+
+  def remove_member_fn(fun, a, [head | tail]) do
+    cond do
+      fun.(head, a) -> tail
+      true -> [head | remove_member_fn(fun, a, tail)]
+    end
+  end
+
+  @doc ~S"""
+    creates an equality function for a fixed value
+
+    iex> Schemer.Little.equal_c?('salad').('salad')
+    true
+
+    iex> Schemer.Little.equal_c?('salad').('tuna')
+    false
+  """
+  def equal_c?(a), do: fn(x) -> a == x end
+
+  @doc ~S"""
+    generates a remove_member function that uses the specified test function
+
+    iex> Schemer.Little.remove_member_fn2(&Schemer.Little.equal?/2).(5, [6, 2, 5, 3])
+    [6, 2, 3]
+
+    iex> Schemer.Little.remove_member_fn2(&Schemer.Little.equal?/2).(:jelly, [:jelly, :beans, :are, :good])
+    [:beans, :are, :good]
+
+    iex> Schemer.Little.remove_member_fn2(&Schemer.Little.equal?/2).([:pop, :corn], [:lemonade, [:pop, :corn], :and, [:cake]])
+    [:lemonade, :and, [:cake]]
+  """
+  def remove_member_fn2(fun) do
+    fn
+      (_, []) -> []
+      (a, [head | tail]) ->
+        cond do
+          fun.(head, a) -> tail
+          true -> [head | remove_member_fn2(fun).(a, tail)]
+        end
+    end
+  end
+
+  def insert_g(seq_fn) do
+    fn
+      (_, _, []) -> []
+      (a, b, [b | tail]) -> seq_fn.(a, b, tail)
+      (a, b, [head | tail]) -> [head | insert_g(seq_fn).(a, b, tail)]
+    end
+  end
+
+  @doc ~S"""
+    uses insert_g and a sequence function to generate a new inssert_right function
+
+    iex> Schemer.Little.insert_right(:topping, :fudge, [:ice, :cream, :with, :fudge, :for, :dessert])
+    [:ice, :cream, :with, :fudge, :topping, :for, :dessert]
+  """
+  def insert_right2(a, b, l), do: insert_g(&([&2 | [&1 | &3]])).(a, b, l)
+
+  @doc ~S"""
+    uses insert_g and a sequence function to generate a new inssert_left function
+
+    iex> Schemer.Little.insert_left2(:chocolate, :fudge, [:ice, :cream, :with, :fudge, :for, :dessert])
+    [:ice, :cream, :with, :chocolate, :fudge, :for, :dessert]
+  """
+  def insert_left2(a, b, l), do: insert_g(&([&1 | [&2 | &3]])).(a, b, l)
+
+  @doc ~S"""
+    uses insert_g and a sequence function to generate a new subst function
+
+    iex> Schemer.Little.subst3(:topping, :fudge, [:ice, :cream, :with, :fudge, :for, :dessert])
+    [:ice, :cream, :with, :topping, :for, :dessert]
+  """
+  def subst3(a, b, l), do: insert_g(fn(a, _, l) -> [a | l] end).(a, b, l)
 end

@@ -1,7 +1,7 @@
 (ns emh.schemer.little-test
   (:require
     [cljs.test :refer-macros [deftest is testing run-tests]]
-    [emh.schemer.little :refer [atom? lat? member? rember firsts insert-right insert-left subst subst2 multi-rember multi-insert-right multi-insert-left multi-subst add1 sub1 plus minus add-tup mult tup-plus greater? less? equal? expt div length pick remove-pick no-nums all-nums occur rember* insert-right* occur* subst* insert-left* member* leftmost rember2, numbered?, value, set??, makeset, makeset2, subset?, eqset?, intersect?, intersect, union, difference, intersect-all, a-pair?, fun?, rev-rel, full-fun?, one-to-one?]]))
+    [emh.schemer.little :refer [atom? lat? member? rember firsts insert-right insert-left subst subst2 multi-rember multi-insert-right multi-insert-left multi-subst add1 sub1 plus minus add-tup mult tup-plus greater? less? equal? expt div length pick remove-pick no-nums all-nums occur rember* insert-right* occur* subst* insert-left* member* leftmost rember2, numbered?, value, set??, makeset, makeset2, subset?, eqset?, intersect?, intersect, union, difference, intersect-all, a-pair?, fun?, rev-rel, full-fun?, one-to-one?, rember-f, eq?-c, rember-f2, insert-right2, insert-left2, subst3]]))
 
 (deftest atom?-test
   (is (= (atom? :turkey) true))
@@ -237,5 +237,30 @@
   (is (= (one-to-one? '((:grape :raisin) (:plum :prune) (:stewed :prune))) false))
   (is (= (one-to-one? '((:grape :raisin) (:plum :prune) (:stewed :grape))) true)))
 
-(run-tests)
+(deftest rember-f-test
+  (is (= (rember-f equal? 5 '(6 2 5 3)) '(6 2 3)))
+  (is (= (rember-f = :jelly '(:jelly :beans :are :good)) '(:beans :are :good)))
+  (is (= (rember-f = '(:pop :corn) '(:lemonade (:pop :corn) :and (:cake))) '(:lemonade :and (:cake)))))
 
+(deftest eq?-c-test
+  (let [eq?-salad (eq?-c :salad)]
+    (is (= (eq?-salad :salad) true))
+    (is (= (eq?-salad :tuna)) false)))
+
+(deftest rember-f2-test
+  (let [rember-f2-1 (rember-f2 equal?)
+        rember-f2-2 (rember-f2 =)]
+    (is (= (rember-f2-1 5 '(6 2 5 3)) '(6 2 3)))
+    (is (= (rember-f2-2 :jelly '(:jelly :beans :are :good)) '(:beans :are :good)))
+    (is (= (rember-f2-2 '(:pop :corn) '(:lemonade (:pop :corn) :and (:cake))) '(:lemonade :and (:cake))))))
+
+(deftest insert-right2-test
+  (is (= (insert-right2 :topping :fudge '(:ice :cream :with :fudge :for :dessert)) '(:ice :cream :with :fudge :topping :for :dessert))))
+
+(deftest insert-left2-test
+  (is (= (insert-left2 :chocolate :fudge '(:ice :cream :with :fudge :for :dessert)) '(:ice :cream :with :chocolate :fudge :for :dessert))))
+
+(deftest subst3-test
+  (is (= (subst3 :topping :fudge '(:ice :cream :with :fudge :for :dessert)) '(:ice :cream :with :topping :for :dessert))))
+
+(run-tests)
