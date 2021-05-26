@@ -360,11 +360,8 @@
       (= (first l) old) (seq-fn new old (rest l))
       :else (cons (first l) ((insert-g seq-fn) new old (rest l))))))
 
-(defn insert-left2 [new old l]
-  ((insert-g #(cons %1 (cons %2 %3))) new old l))
+(def insert-left2 (insert-g #(cons %1 (cons %2 %3))))
 
-(defn insert-right2 [new old l]
-  ((insert-g #(cons %2 (cons %1 %3))) new old l))
+(def insert-right2 (insert-g #(cons %2 (cons %1 %3))))
 
-(defn subst3 [new old l]
-  ((insert-g #(cons %1 %3)) new old l))
+(def subst3 (insert-g #(cons %1 %3)))
