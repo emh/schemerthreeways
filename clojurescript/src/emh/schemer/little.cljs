@@ -435,3 +435,23 @@
         (rest lat)
         (fn [newlat left right] (col (cons (first lat) newlat) left right)))))
 
+(defn evens-only* [l]
+  (cond
+    (empty? l) []
+    (atom? (first l))
+      (cond
+        (even? (first l)) (cons (first l) (evens-only* (rest l)))
+        :else (evens-only* (rest l)))
+    :else (cons
+      (evens-only* (first l))
+      (evens-only* (rest l)))))
+
+(defn evens-only*-co [l col]
+  (cond
+    (empty? l) (col [] 1 0)
+    (atom? (first l))
+      (cond
+        (even? (first l)) (evens-only*-co (rest l) (fn [newl p s] (col (cons (first l) newl) (* p (first l)) s)))
+        :else (evens-only*-co (rest l) (fn [newl p s] (col newl p (+ (first l) s)))))
+    :else
+      (evens-only*-co (first l) (fn [al ap as] (evens-only*-co (rest l) (fn [dl dp ds] (col (cons al dl) (* ap dp) (+ as ds))))))))

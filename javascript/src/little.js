@@ -335,3 +335,20 @@ export const multiInsertLeftRightCo = (n, oldL, oldR, lat, col) =>
     : car(lat) === oldR ?
         multiInsertLeftRightCo(n, oldL, oldR, cdr(lat), (newlat, numL, numR) => col(cons(oldR, cons(n, newlat)), numL, add1(numR)))
     : multiInsertLeftRightCo(n, oldL, oldR, cdr(lat), (newlat, numL, numR) => col(cons(car(lat), newlat), numL, numR));
+
+export const isEven = (n) => n % 2 === 0;
+
+export const evensOnlyAll = (l) =>
+    isEmpty(l) ? []
+    : isAtom(car(l)) ?
+        isEven(car(l)) ? cons(car(l), evensOnlyAll(cdr(l)))
+        : evensOnlyAll(cdr(l))
+    : cons(evensOnlyAll(car(l)), evensOnlyAll(cdr(l)));
+
+export const evensOnlyAllCo = (l, col) =>
+    isEmpty(l) ? col([], 1, 0)
+    : isAtom(car(l)) ?
+        isEven(car(l)) ? evensOnlyAllCo(cdr(l), (nl, p, s) => col(cons(car(l), nl), p * car(l), s))
+        : evensOnlyAllCo(cdr(l), (nl, p, s) => col(nl, p, s + car(l)))
+    : evensOnlyAllCo(car(l), (al, ap, as) => evensOnlyAllCo(cdr(l), (dl, dp, ds) => col(cons(al, dl), ap * dp, as + ds)));
+

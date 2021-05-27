@@ -1014,4 +1014,34 @@ defmodule Schemer.Little do
   def multi_insert_leftright_co(new, old_l, old_r, [old_r | tail], col), do: multi_insert_leftright_co(new, old_l, old_r, tail, (fn (newlat, num_left, num_right) -> col.([old_r | [new | newlat]], num_left, add1(num_right)) end))
 
   def multi_insert_leftright_co(new, old_l, old_r, [head | tail], col), do: multi_insert_leftright_co(new, old_l, old_r, tail, (fn (newlat, num_left, num_right) -> col.([head | newlat], num_left, num_right) end))
+
+  @doc ~S"""
+    Returns all the even numbers in a nested list
+
+    iex> Schemer.Little.evens_only_all([[9, 1, 2, 8], 3, 10, [[9, 9], 7, 6], 2])
+    [[2, 8], 10, [[], 6], 2]
+  """
+  defguard is_even(value) when is_integer(value) and rem(value, 2) == 0
+
+  def evens_only_all([]), do: []
+
+  def evens_only_all([head | tail]) when is_even(head), do: [head | evens_only_all(tail)]
+
+  def evens_only_all([head | tail]) when is_number(head), do: evens_only_all(tail)
+
+  def evens_only_all([head | tail]), do: [evens_only_all(head) | evens_only_all(tail)]
+
+  @doc ~S"""
+    Returns all the even numbers in a nested list and calculates their product and the sum of all the odd numbers that were removed and passes that all to a collector function
+
+    iex> Schemer.Little.evens_only_all_co([[9, 1, 2, 8], 3, 10, [[9, 9], 7, 6], 2], (fn (l, p, s) -> [s | [p | l]] end))
+    [38, 1920, [2, 8], 10, [[], 6], 2]
+  """
+  def evens_only_all_co([], col), do: col.([], 1, 0)
+
+  def evens_only_all_co([head | tail], col) when is_list(head), do: evens_only_all_co(head, (fn (al, ap, as) -> evens_only_all_co(tail, (fn (dl, dp, ds) -> col.([al | dl], ap * dp, as + ds) end)) end))
+
+  def evens_only_all_co([head | tail], col) when is_even(head), do: evens_only_all_co(tail, (fn (nl, p, s) -> col.([head | nl], p * head, s) end))
+
+  def evens_only_all_co([head | tail], col) when is_number(head), do: evens_only_all_co(tail, (fn (nl, p, s) -> col.(nl, p, s + head) end))
 end

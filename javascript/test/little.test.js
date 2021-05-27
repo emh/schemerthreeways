@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 
-import { isAtom, isEmpty, car, cdr, cons, isListOfAtoms, isMember, removeMember, firsts, insertRight, insertLeft, subst, subst2, multiRemoveMember, multiInsertRight, multiInsertLeft, multiSubst, add1, sub1, isZero, plus, minus, addTup, mult, tupPlus, isGreater, isLess, isEqual, expt, div, length, pick, removePick, noNums, allNums, occur, removeMemberAll, insertRightAll, occurAll, substAll, insertLeftAll, memberAll, leftMost, isDeepEqual, removeMember2, isNumbered, value, isSet, makeSet, makeSet2, isSubset, isEqualSets, doesIntersect, intersect, union, difference, intersectAll, isAPair, isFun, revRel, isFullFun, isOneToOne, isEqual2, removeMemberFn, isEqualC, removeMemberFn2, insertRight2, insertLeft2, subst3, removeMember3, multiRemoveMemberCo, multiInsertLeftRightCo } from '../src/little.js';
+import { isAtom, isEmpty, car, cdr, cons, isListOfAtoms, isMember, removeMember, firsts, insertRight, insertLeft, subst, subst2, multiRemoveMember, multiInsertRight, multiInsertLeft, multiSubst, add1, sub1, isZero, plus, minus, addTup, mult, tupPlus, isGreater, isLess, isEqual, expt, div, length, pick, removePick, noNums, allNums, occur, removeMemberAll, insertRightAll, occurAll, substAll, insertLeftAll, memberAll, leftMost, isDeepEqual, removeMember2, isNumbered, value, isSet, makeSet, makeSet2, isSubset, isEqualSets, doesIntersect, intersect, union, difference, intersectAll, isAPair, isFun, revRel, isFullFun, isOneToOne, isEqual2, removeMemberFn, isEqualC, removeMemberFn2, insertRight2, insertLeft2, subst3, removeMember3, multiRemoveMemberCo, multiInsertLeftRightCo, evensOnlyAll, evensOnlyAllCo } from '../src/little.js';
 
 describe('isAtom', () => {
     it('handles strings', () => {
@@ -560,5 +560,17 @@ describe('multiRemoveMemberCo', () => {
 describe('multiInsertLeftRightCo', () => {
     it('inserts the new item to the left or right of the matching old items in a list and passes the new list and a count of the insertions to the collector function', () => {
         assert.deepStrictEqual(multiInsertLeftRightCo('salty', 'fish', 'chips', ['chips', 'and', 'fish', 'or', 'fish', 'and', 'chips'], (newlat) => newlat), ['chips', 'salty', 'and', 'salty', 'fish', 'or', 'salty', 'fish', 'and', 'chips', 'salty']);
+    });
+});
+
+describe('evensOnlyAll', () => {
+    it('returns all the even numbers in a nested list of numbers', () => {
+        assert.deepStrictEqual(evensOnlyAll([[9, 1, 2, 8], 3, 10, [[9, 9], 7, 6], 2]), [[2, 8], 10, [[], 6], 2]);
+    });
+});
+
+describe('evensOnlyAllCo', () => {
+    it('returns all the even numbers and calculates the sum of the odds and the product of the evens', () => {
+        assert.deepStrictEqual(evensOnlyAllCo([[9, 1, 2, 8], 3, 10, [[9, 9], 7, 6], 2], (l, p, s) => [s, p, ...l]), [38, 1920, [2, 8], 10, [[], 6], 2]);
     });
 });

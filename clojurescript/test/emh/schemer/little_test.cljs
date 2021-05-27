@@ -1,7 +1,7 @@
 (ns emh.schemer.little-test
   (:require
     [cljs.test :refer-macros [deftest is testing run-tests]]
-    [emh.schemer.little :refer [atom? lat? member? rember firsts insert-right insert-left subst subst2 multi-rember multi-insert-right multi-insert-left multi-subst add1 sub1 plus minus add-tup mult tup-plus greater? less? equal? expt div length pick remove-pick no-nums all-nums occur rember* insert-right* occur* subst* insert-left* member* leftmost rember2 numbered? value set?? makeset makeset2 subset? eqset? intersect? intersect union difference intersect-all a-pair? fun? rev-rel full-fun? one-to-one? rember-f eq?-c rember-f2 insert-right2 insert-left2 subst3 rember3 value2 multi-rember-f multi-rember-t multi-rember-co multi-insert-leftright-co]]))
+    [emh.schemer.little :refer [atom? lat? member? rember firsts insert-right insert-left subst subst2 multi-rember multi-insert-right multi-insert-left multi-subst add1 sub1 plus minus add-tup mult tup-plus greater? less? equal? expt div length pick remove-pick no-nums all-nums occur rember* insert-right* occur* subst* insert-left* member* leftmost rember2 numbered? value set?? makeset makeset2 subset? eqset? intersect? intersect union difference intersect-all a-pair? fun? rev-rel full-fun? one-to-one? rember-f eq?-c rember-f2 insert-right2 insert-left2 subst3 rember3 value2 multi-rember-f multi-rember-t multi-rember-co multi-insert-leftright-co evens-only* evens-only*-co]]))
 
 (deftest atom?-test
   (is (= (atom? :turkey) true))
@@ -283,5 +283,11 @@
 
 (deftest multi-insert-leftright-co-test
   (is (= (multi-insert-leftright-co :salty :fish :chips '(:chips :and :fish :or :fish :and :chips) (fn [newlat right left] newlat)) '(:chips :salty :and :salty :fish :or :salty :fish :and :chips :salty))))
+
+(deftest evens-only*-test
+  (is (= (evens-only* '((9 1 2 8) 3 10 ((9 9) 7 6) 2)) '((2 8) 10 (() 6) 2))))
+
+(deftest evens-only*-co-test
+  (is (= (evens-only*-co '((9 1 2 8) 3 10 ((9 9) 7 6) 2) (fn [l p s] (cons s (cons p l)))) '(38 1920 (2 8) 10 (() 6) 2))))
 
 (run-tests)
