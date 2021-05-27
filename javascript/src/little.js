@@ -319,3 +319,19 @@ export const insertRight2 = insertG((a, b, l) => cons(b, cons(a, l)));
 export const insertLeft2 = insertG((a, b, l) => cons(a, cons(b, l)));
 
 export const subst3 = insertG((a, b, l) => cons(a, l));
+
+export const removeMember3 = (a, l) => insertG((a, b, l) => l)(false, a, l);
+
+export const multiRemoveMemberCo = (a, lat, col) =>
+    isEmpty(lat) ? col([], [])
+    : car(lat) === a ?
+        multiRemoveMemberCo(a, cdr(lat), (newlat, seen) => col(newlat, cons(car(lat), seen)))
+    : multiRemoveMemberCo(a, cdr(lat), (newlat, seen) => col(cons(car(lat), newlat), seen));
+
+export const multiInsertLeftRightCo = (n, oldL, oldR, lat, col) =>
+    isEmpty(lat) ? col([], 0, 0)
+    : car(lat) === oldL ?
+        multiInsertLeftRightCo(n, oldL, oldR, cdr(lat), (newlat, numL, numR) => col(cons(n, cons(oldL, newlat)), add1(numL), numR))
+    : car(lat) === oldR ?
+        multiInsertLeftRightCo(n, oldL, oldR, cdr(lat), (newlat, numL, numR) => col(cons(oldR, cons(n, newlat)), numL, add1(numR)))
+    : multiInsertLeftRightCo(n, oldL, oldR, cdr(lat), (newlat, numL, numR) => col(cons(car(lat), newlat), numL, numR));

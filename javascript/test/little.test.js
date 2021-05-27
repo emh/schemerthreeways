@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 
-import { isAtom, isEmpty, car, cdr, cons, isListOfAtoms, isMember, removeMember, firsts, insertRight, insertLeft, subst, subst2, multiRemoveMember, multiInsertRight, multiInsertLeft, multiSubst, add1, sub1, isZero, plus, minus, addTup, mult, tupPlus, isGreater, isLess, isEqual, expt, div, length, pick, removePick, noNums, allNums, occur, removeMemberAll, insertRightAll, occurAll, substAll, insertLeftAll, memberAll, leftMost, isDeepEqual, removeMember2, isNumbered, value, isSet, makeSet, makeSet2, isSubset, isEqualSets, doesIntersect, intersect, union, difference, intersectAll, isAPair, isFun, revRel, isFullFun, isOneToOne, isEqual2, removeMemberFn, isEqualC, removeMemberFn2, insertRight2, insertLeft2, subst3 } from '../src/little.js';
+import { isAtom, isEmpty, car, cdr, cons, isListOfAtoms, isMember, removeMember, firsts, insertRight, insertLeft, subst, subst2, multiRemoveMember, multiInsertRight, multiInsertLeft, multiSubst, add1, sub1, isZero, plus, minus, addTup, mult, tupPlus, isGreater, isLess, isEqual, expt, div, length, pick, removePick, noNums, allNums, occur, removeMemberAll, insertRightAll, occurAll, substAll, insertLeftAll, memberAll, leftMost, isDeepEqual, removeMember2, isNumbered, value, isSet, makeSet, makeSet2, isSubset, isEqualSets, doesIntersect, intersect, union, difference, intersectAll, isAPair, isFun, revRel, isFullFun, isOneToOne, isEqual2, removeMemberFn, isEqualC, removeMemberFn2, insertRight2, insertLeft2, subst3, removeMember3, multiRemoveMemberCo, multiInsertLeftRightCo } from '../src/little.js';
 
 describe('isAtom', () => {
     it('handles strings', () => {
@@ -541,5 +541,24 @@ describe('insertLeft2', () => {
 describe('subst3', () => {
     it('uses insertG and a sequence fn to recreate the subst function', () => {
         assert.deepStrictEqual(subst3('topping', 'fudge', ['ice', 'cream', 'with', 'fudge', 'for', 'dessert']), ['ice', 'cream', 'with', 'topping', 'for', 'dessert']);
+    });
+});
+
+describe('removeMember3', () => {
+    it('uses insertG and a sequence fn to recreate the removeMember function', () => {
+        assert.deepStrictEqual(removeMember3('and', ['bacon', 'lettuce', 'and', 'tomato']), ['bacon', 'lettuce', 'tomato']);
+    });
+});
+
+describe('multiRemoveMemberCo', () => {
+    it('divides the list into a list of atoms that are removed from the list and a list of remaining atoms and passes those lists to the supplied collector function', () => {
+        assert.deepStrictEqual(multiRemoveMemberCo('tuna', ['strawberries', 'tuna', 'and', 'swordfish'], (x, y) => x), ['strawberries', 'and', 'swordfish']);
+        assert.strictEqual(multiRemoveMemberCo('tuna', ['strawberries', 'tuna', 'and', 'swordfish'], (x, y) => x.length), 3);
+    });
+});
+
+describe('multiInsertLeftRightCo', () => {
+    it('inserts the new item to the left or right of the matching old items in a list and passes the new list and a count of the insertions to the collector function', () => {
+        assert.deepStrictEqual(multiInsertLeftRightCo('salty', 'fish', 'chips', ['chips', 'and', 'fish', 'or', 'fish', 'and', 'chips'], (newlat) => newlat), ['chips', 'salty', 'and', 'salty', 'fish', 'or', 'salty', 'fish', 'and', 'chips', 'salty']);
     });
 });

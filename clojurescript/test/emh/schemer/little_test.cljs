@@ -1,7 +1,7 @@
 (ns emh.schemer.little-test
   (:require
     [cljs.test :refer-macros [deftest is testing run-tests]]
-    [emh.schemer.little :refer [atom? lat? member? rember firsts insert-right insert-left subst subst2 multi-rember multi-insert-right multi-insert-left multi-subst add1 sub1 plus minus add-tup mult tup-plus greater? less? equal? expt div length pick remove-pick no-nums all-nums occur rember* insert-right* occur* subst* insert-left* member* leftmost rember2, numbered?, value, set??, makeset, makeset2, subset?, eqset?, intersect?, intersect, union, difference, intersect-all, a-pair?, fun?, rev-rel, full-fun?, one-to-one?, rember-f, eq?-c, rember-f2, insert-right2, insert-left2, subst3]]))
+    [emh.schemer.little :refer [atom? lat? member? rember firsts insert-right insert-left subst subst2 multi-rember multi-insert-right multi-insert-left multi-subst add1 sub1 plus minus add-tup mult tup-plus greater? less? equal? expt div length pick remove-pick no-nums all-nums occur rember* insert-right* occur* subst* insert-left* member* leftmost rember2 numbered? value set?? makeset makeset2 subset? eqset? intersect? intersect union difference intersect-all a-pair? fun? rev-rel full-fun? one-to-one? rember-f eq?-c rember-f2 insert-right2 insert-left2 subst3 rember3 value2 multi-rember-f multi-rember-t multi-rember-co multi-insert-leftright-co]]))
 
 (deftest atom?-test
   (is (= (atom? :turkey) true))
@@ -262,5 +262,26 @@
 
 (deftest subst3-test
   (is (= (subst3 :topping :fudge '(:ice :cream :with :fudge :for :dessert)) '(:ice :cream :with :topping :for :dessert))))
+
+(deftest rember3-test
+  (is (= (rember3 :and '(:bacon :lettuce :and :tomato)) '(:bacon :lettuce :tomato))))
+
+(deftest value2-test
+  (is (= (value2 '(1 :+ 3)) 4))
+  (is (= (value2 '(1 :+ (3 :** 4))) 82))
+  (is (= (value2 '((3 :* 6) :+ (8 :** 2))) 82)))
+
+(deftest multi-rember-f-test
+  (is (= ((multi-rember-f =) :tuna '(:shrimp :salad :tuna :salad :and :tuna)) '(:shrimp :salad :salad :and))))
+
+(deftest multi-rember-t-test
+  (is (= (multi-rember-t #(= :tuna %1) '(:shrimp :salad :tuna :salad :and :tuna)) '(:shrimp :salad :salad :and))))
+
+(deftest multi-rember-co-test
+  (is (= (multi-rember-co :tuna '(:strawberries :tuna :and :swordfish) (fn [x y] x)) '(:strawberries :and :swordfish)))
+  (is (= (multi-rember-co :tuna '(:strawberries :tuna :and :swordfish) (fn [x y] (count x))) 3)))
+
+(deftest multi-insert-leftright-co-test
+  (is (= (multi-insert-leftright-co :salty :fish :chips '(:chips :and :fish :or :fish :and :chips) (fn [newlat right left] newlat)) '(:chips :salty :and :salty :fish :or :salty :fish :and :chips :salty))))
 
 (run-tests)

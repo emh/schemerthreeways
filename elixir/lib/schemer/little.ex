@@ -953,4 +953,65 @@ defmodule Schemer.Little do
     [:ice, :cream, :with, :topping, :for, :dessert]
   """
   def subst3(a, b, l), do: insert_g(fn(a, _, l) -> [a | l] end).(a, b, l)
+
+  @doc ~S"""
+    uses insert_g and a sequence function to generate a new rember function
+
+    iex> Schemer.Little.rember3(:and, [:bacon, :lettuce, :and, :tomato])
+    [:bacon, :lettuce, :tomato]
+
+    iex> Schemer.Little.rember3([:and], [:bacon, :lettuce, [:and], :tomato])
+    [:bacon, :lettuce, :tomato]
+  """
+  def rember3(a, l), do: insert_g(fn(_, _, l) -> l end).(false, a, l)
+
+  def atom_to_fn(:+), do: &plus/2
+  def atom_to_fn(:-), do: &minus/2
+  def atom_to_fn(:*), do: &mult/2
+  def atom_to_fn(_), do: &expt/2
+
+  @doc ~S"""
+    Calculates the value of a numeric expression
+
+    iex> Schemer.Little.value2([1, :+, 3])
+    4
+
+    iex> Schemer.Little.value2([1, :+, [3, :^, 4]])
+    82
+
+    iex> Schemer.Little.value2([[3, :*, 6], :+, [8, :^, 2]])
+    82
+  """
+  def value2([first_sexp, op, second_sexp]), do: atom_to_fn(op).(value(first_sexp), value(second_sexp))
+
+  def value2(nexp), do: nexp
+
+  @doc ~S"""
+    Divides the list into one list of items that match and one list of items that don't and then calls the collector function with those two lists
+
+    iex> Schemer.Little.multi_rember_co(:tuna, [:strawberries, :tuna, :and, :swordfish], (fn (x, _) -> x end))
+    [:strawberries, :and, :swordfish]
+
+    iex> Schemer.Little.multi_rember_co(:tuna, [:strawberries, :tuna, :and, :swordfish], (fn (x, _) -> length(x) end))
+    3
+  """
+  def multi_rember_co(_, [], col), do: col.([], [])
+
+  def multi_rember_co(a, [a | tail], col), do: multi_rember_co(a, tail, (fn (newlat, seen) -> col.(newlat, [a | seen]) end))
+
+  def multi_rember_co(a, [head | tail], col), do: multi_rember_co(a, tail, (fn (newlat, seen) -> col.([head | newlat], seen) end))
+
+  @doc ~S"""
+    inserts the new item to the left or right of the matching old items in a list and passes the new list and a count of the insertions to the collector function
+
+    iex> Schemer.Little.multi_insert_leftright_co(:salty, :fish, :chips, [:chips, :and, :fish, :or, :fish, :and, :chips], (fn (newlat, _, _) -> newlat end))
+    [:chips, :salty, :and, :salty, :fish, :or, :salty, :fish, :and, :chips, :salty]
+  """
+  def multi_insert_leftright_co(_, _, _, [], col), do: col.([], 0, 0)
+
+  def multi_insert_leftright_co(new, old_l, old_r, [old_l | tail], col), do: multi_insert_leftright_co(new, old_l, old_r, tail, (fn (newlat, num_left, num_right) -> col.([new | [old_l | newlat]], add1(num_left), num_right) end))
+
+  def multi_insert_leftright_co(new, old_l, old_r, [old_r | tail], col), do: multi_insert_leftright_co(new, old_l, old_r, tail, (fn (newlat, num_left, num_right) -> col.([old_r | [new | newlat]], num_left, add1(num_right)) end))
+
+  def multi_insert_leftright_co(new, old_l, old_r, [head | tail], col), do: multi_insert_leftright_co(new, old_l, old_r, tail, (fn (newlat, num_left, num_right) -> col.([head | newlat], num_left, num_right) end))
 end

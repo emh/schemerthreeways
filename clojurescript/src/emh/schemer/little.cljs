@@ -365,3 +365,73 @@
 (def insert-right2 (insert-g #(cons %2 (cons %1 %3))))
 
 (def subst3 (insert-g #(cons %1 %3)))
+
+(defn rember3 [a l]
+  ((insert-g (fn [new old l] l)) false a l))
+
+(defn atom-to-fn [a]
+  (cond
+    (= a :+) plus
+    (= a :-) minus
+    (= a :*) mult
+    :else expt))
+
+(defn value2 [nexp]
+  (cond
+    (atom? nexp) nexp
+    :else ((atom-to-fn (operator nexp)) (value (first-sexp nexp)) (value (second-sexp nexp)))))
+
+(defn multi-rember2 [])
+
+(defn multi-rember-f [test]
+  (fn [a lat]
+    (cond
+      (empty? lat) []
+      (test (first lat) a) ((multi-rember-f test) a (rest lat))
+      :else (cons (first lat) ((multi-rember-f test) a (rest lat))))))
+
+(defn multi-rember-t [test lat]
+  (cond
+    (empty? lat) []
+    (test (first lat)) (multi-rember-t test (rest lat))
+    :else (cons (first lat) (multi-rember-t test (rest lat)))))
+
+(defn multi-rember-co [a lat col]
+  (cond
+    (empty? lat) (col [] [])
+    (= (first lat) a)
+      (multi-rember-co
+        a
+        (rest lat)
+        (fn [newlat seen] (col newlat (cons (first lat) seen))))
+    :else
+      (multi-rember-co
+        a
+        (rest lat)
+        (fn [newlat seen] (col (cons (first lat) newlat) seen)))))
+
+(defn multi-insert-leftright-co [new old-left old-right lat col]
+  (cond
+    (empty? lat) (col [] 0 0)
+    (= (first lat) old-left)
+      (multi-insert-leftright-co
+        new
+        old-left
+        old-right
+        (rest lat)
+        (fn [newlat left right] (col (cons new (cons old-left newlat)) (add1 left) right)))
+    (= (first lat) old-right)
+      (multi-insert-leftright-co
+        new
+        old-left
+        old-right
+        (rest lat)
+        (fn [newlat left right] (col (cons old-right (cons new newlat)) left (add1 right))))
+    :else
+      (multi-insert-leftright-co
+        new
+        old-left
+        old-right
+        (rest lat)
+        (fn [newlat left right] (col (cons (first lat) newlat) left right)))))
+
