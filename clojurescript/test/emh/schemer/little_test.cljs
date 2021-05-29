@@ -1,7 +1,7 @@
 (ns emh.schemer.little-test
   (:require
     [cljs.test :refer-macros [deftest is testing run-tests]]
-    [emh.schemer.little :refer [atom? lat? member? rember firsts insert-right insert-left subst subst2 multi-rember multi-insert-right multi-insert-left multi-subst add1 sub1 plus minus add-tup mult tup-plus greater? less? equal? expt div length pick remove-pick no-nums all-nums occur rember* insert-right* occur* subst* insert-left* member* leftmost rember2 numbered? value set?? makeset makeset2 subset? eqset? intersect? intersect union difference intersect-all a-pair? fun? rev-rel full-fun? one-to-one? rember-f eq?-c rember-f2 insert-right2 insert-left2 subst3 rember3 value2 multi-rember-f multi-rember-t multi-rember-co multi-insert-leftright-co evens-only* evens-only*-co]]))
+    [emh.schemer.little :refer [atom? lat? member? rember firsts insert-right insert-left subst subst2 multi-rember multi-insert-right multi-insert-left multi-subst add1 sub1 plus minus add-tup mult tup-plus greater? less? equal? expt div length pick remove-pick no-nums all-nums occur rember* insert-right* occur* subst* insert-left* member* leftmost rember2 numbered? value set?? makeset makeset2 subset? eqset? intersect? intersect union difference intersect-all a-pair? fun? rev-rel full-fun? one-to-one? rember-f eq?-c rember-f2 insert-right2 insert-left2 subst3 rember3 value2 multi-rember-f multi-rember-t multi-rember-co multi-insert-leftright-co evens-only* evens-only*-co looking shift weight*]]))
 
 (deftest atom?-test
   (is (= (atom? :turkey) true))
@@ -289,5 +289,17 @@
 
 (deftest evens-only*-co-test
   (is (= (evens-only*-co '((9 1 2 8) 3 10 ((9 9) 7 6) 2) (fn [l p s] (cons s (cons p l)))) '(38 1920 (2 8) 10 (() 6) 2))))
+
+(deftest looking-test
+  (is (= (looking :caviar '(6 2 4 :caviar 5 7 3)) true))
+  (is (= (looking :caviar '(6 2 :grits :caviar 5 7 3)) false)))
+
+(deftest shift-test
+  (is (= (shift '((:a :b) :c)) '(:a (:b :c))))
+  (is (= (shift '((:a :b) (:c :d))) '(:a (:b (:c :d))))))
+
+(deftest weight*-test
+  (is (= (weight* '((:a :b) :c)) 7))
+  (is (= (weight* '(:a (:b :c))) 5)))
 
 (run-tests)

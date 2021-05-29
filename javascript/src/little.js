@@ -352,3 +352,14 @@ export const evensOnlyAllCo = (l, col) =>
         : evensOnlyAllCo(cdr(l), (nl, p, s) => col(nl, p, s + car(l)))
     : evensOnlyAllCo(car(l), (al, ap, as) => evensOnlyAllCo(cdr(l), (dl, dp, ds) => col(cons(al, dl), ap * dp, as + ds)));
 
+export const keepLooking = (a, sorn, lat) => isNumber(sorn) ? keepLooking(a, pick(sorn, lat), lat) : sorn === a;
+
+export const looking = (a, lat) => keepLooking(a, pick(1, lat), lat);
+
+export const shift = (pair) => build(car(car(pair)), build(second(car(pair)), second(pair)));
+
+export const weightAll = (pora) =>
+    isAtom(pora) ? 1
+    : (weightAll(car(pora)) * 2) + weightAll(second(pora));
+
+export const Y = (le) => ((f) => f(f))((f) => le((x) => (f(f))(x)));

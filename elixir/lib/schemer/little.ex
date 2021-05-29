@@ -1044,4 +1044,52 @@ defmodule Schemer.Little do
   def evens_only_all_co([head | tail], col) when is_even(head), do: evens_only_all_co(tail, (fn (nl, p, s) -> col.([head | nl], p * head, s) end))
 
   def evens_only_all_co([head | tail], col) when is_number(head), do: evens_only_all_co(tail, (fn (nl, p, s) -> col.(nl, p, s + head) end))
+
+  def keep_looking(a, sorn, lat) when is_number(sorn), do: keep_looking(a, pick(sorn, lat), lat);
+
+  def keep_looking(a, sorn, _), do: sorn == a
+
+  @doc ~S"""
+    Finds an item in a list using a sequence of indexes also in the list
+
+    iex> Schemer.Little.looking(:caviar, [6, 2, 4, :caviar, 5, 7, 3])
+    true
+
+    iex> Schemer.Little.looking(:caviar, [6, 2, :grits, :caviar, 5, 7, 3])
+    false
+  """
+  def looking(a, lat), do: keep_looking(a, pick(1, lat), lat)
+
+  @doc ~s"""
+    iex> Schemer.Little.shift([[:a, :b], :c])
+    [:a, [:b, :c]]
+
+    iex> Schemer.Little.shift([[:a, :b], [:c, :d]])
+    [:a, [:b, [:c, :d]]]
+  """
+  def shift([[a, b], c]), do: build(a, build(b, c))
+
+  @doc ~S"""
+    iex> Schemer.Little.weight_all([[:a, :b], :c])
+    7
+
+    iex> Schemer.Little.weight_all([:a, [:b, :c]])
+    5
+  """
+  def weight_all([a, b]), do: (weight_all(a) * 2) + weight_all(b)
+
+  def weight_all(_), do: 1
+
+  def part_fac(f) do
+    (fn
+      (0) -> 1
+      (n) -> n * f.(n - 1)
+    end)
+  end
+
+  @doc ~S"""
+    iex> (Schemer.Little.y(&Schemer.Little.part_fac/1)).(5)
+    120
+  """
+  def y(le), do: (fn (f) -> f.(f) end).((fn (f) -> le.((fn (x) -> (f.(f)).(x) end)) end))
 end

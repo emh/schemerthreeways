@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 
-import { isAtom, isEmpty, car, cdr, cons, isListOfAtoms, isMember, removeMember, firsts, insertRight, insertLeft, subst, subst2, multiRemoveMember, multiInsertRight, multiInsertLeft, multiSubst, add1, sub1, isZero, plus, minus, addTup, mult, tupPlus, isGreater, isLess, isEqual, expt, div, length, pick, removePick, noNums, allNums, occur, removeMemberAll, insertRightAll, occurAll, substAll, insertLeftAll, memberAll, leftMost, isDeepEqual, removeMember2, isNumbered, value, isSet, makeSet, makeSet2, isSubset, isEqualSets, doesIntersect, intersect, union, difference, intersectAll, isAPair, isFun, revRel, isFullFun, isOneToOne, isEqual2, removeMemberFn, isEqualC, removeMemberFn2, insertRight2, insertLeft2, subst3, removeMember3, multiRemoveMemberCo, multiInsertLeftRightCo, evensOnlyAll, evensOnlyAllCo } from '../src/little.js';
+import { isAtom, isEmpty, car, cdr, cons, isListOfAtoms, isMember, removeMember, firsts, insertRight, insertLeft, subst, subst2, multiRemoveMember, multiInsertRight, multiInsertLeft, multiSubst, add1, sub1, isZero, plus, minus, addTup, mult, tupPlus, isGreater, isLess, isEqual, expt, div, length, pick, removePick, noNums, allNums, occur, removeMemberAll, insertRightAll, occurAll, substAll, insertLeftAll, memberAll, leftMost, isDeepEqual, removeMember2, isNumbered, value, isSet, makeSet, makeSet2, isSubset, isEqualSets, doesIntersect, intersect, union, difference, intersectAll, isAPair, isFun, revRel, isFullFun, isOneToOne, isEqual2, removeMemberFn, isEqualC, removeMemberFn2, insertRight2, insertLeft2, subst3, removeMember3, multiRemoveMemberCo, multiInsertLeftRightCo, evensOnlyAll, evensOnlyAllCo, looking, shift, weightAll, Y } from '../src/little.js';
 
 describe('isAtom', () => {
     it('handles strings', () => {
@@ -572,5 +572,34 @@ describe('evensOnlyAll', () => {
 describe('evensOnlyAllCo', () => {
     it('returns all the even numbers and calculates the sum of the odds and the product of the evens', () => {
         assert.deepStrictEqual(evensOnlyAllCo([[9, 1, 2, 8], 3, 10, [[9, 9], 7, 6], 2], (l, p, s) => [s, p, ...l]), [38, 1920, [2, 8], 10, [[], 6], 2]);
+    });
+});
+
+describe('looking', () => {
+    it('finds an atom in a list using a series of indexes, also stored in the list', () => {
+        assert.strictEqual(looking('caviar', [6, 2, 4, 'caviar', 5, 7, 3]), true);
+        assert.strictEqual(looking('caviar', [6, 2, 'grits', 'caviar', 5, 7, 3]), false);
+    });
+});
+
+describe('shift', () => {
+    it('', () => {
+        assert.deepStrictEqual(shift([['a', 'b'], 'c']), ['a', ['b', 'c']]);
+        assert.deepStrictEqual(shift([['a', 'b'], ['c', 'd']]), ['a', ['b', ['c', 'd']]]);
+    });
+});
+
+describe('weightAll', () => {
+    it('', () => {
+        assert.strictEqual(weightAll([['a', 'b'], 'c']), 7);
+        assert.strictEqual(weightAll(['a', ['b', 'c']]), 5);
+    });
+});
+
+describe('Y', () => {
+    it('creates a recursive function', () => {
+        const fn = (f) => (n) => n === 0 ? 1 : n * f(n - 1);
+
+        assert.strictEqual((Y(fn))(5), 120);
     });
 });

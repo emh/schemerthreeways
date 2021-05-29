@@ -455,3 +455,122 @@
         :else (evens-only*-co (rest l) (fn [newl p s] (col newl p (+ (first l) s)))))
     :else
       (evens-only*-co (first l) (fn [al ap as] (evens-only*-co (rest l) (fn [dl dp ds] (col (cons al dl) (* ap dp) (+ as ds))))))))
+
+(defn keep-looking [a sorn lat]
+  (cond
+    (number? sorn) (keep-looking a (pick sorn lat) lat)
+    :else (= sorn a)))
+
+(defn looking [a lat] (keep-looking a (pick 1 lat) lat))
+
+(defn shift [pair]
+  (build (first (first pair)) (build (second (first pair)) (second pair))))
+
+(defn align [pora]
+  (cond
+    (atom? pora) pora
+    (a-pair? (first pora)) (align (shift pora))
+    :else (build (first pora) (align (second pora)))))
+
+(defn length* [pora]
+  (cond
+    (atom? pora) 1
+    :else (+ (length* (first pora)) (length* (second pora)))))
+
+(defn weight* [pora]
+  (cond
+    (atom? pora) 1
+    :else (+ (* (weight* (first pora)) 2) (weight* (second pora)))))
+
+(defn C [n]
+  (cond
+    (one? n) 1
+    (even? n) (C (/ n 2))
+    :else (C (add1 (* 3 n)))))
+
+(defn A [n m]
+  (cond
+    (zero? n) (add1 m)
+    (zero? m) (A (sub1 n) 1)
+    :else (A (sub1 n) (A n (sub1 m)))))
+
+(defn eternity [x] (eternity x))
+
+;; length0 - only returns the length of an empty list
+((fn [l]
+  (cond
+    (empty? l) 0
+    :else (add1 (eternity (rest l))))) '())
+
+;; length<=1
+((fn [l]
+  (cond
+    (empty? l) 0
+    :else (add1
+      ((fn [l]
+        (cond
+          (empty? l) 0
+          :else (add1 (eternity (rest l))))) (rest l)))))
+  '(1))
+
+;; also length0
+((fn [length]
+  (fn [l]
+    (cond
+      (empty? l) 0
+      :else (add1 (length (rest l))))))
+  eternity)
+
+;; also length0
+((fn [mk-length]
+  (mk-length eternity))
+  (fn [length]
+    (fn [l]
+      (cond
+        (empty? l) 0
+        :else (add1 (length (rest l)))))))
+
+;; also length<=1
+((fn [mk-length]
+  (mk-length (mk-length eternity)))
+  (fn [length]
+    (fn [l]
+      (cond
+        (empty? l) 0
+        :else (add1 (length (rest l)))))))
+
+((fn [mk-length]
+  (mk-length mk-length))
+  (fn [length]
+    (fn [l]
+      (cond
+        (empty? l) 0
+        :else (add1 (length (rest l)))))))
+
+;; also length<=1
+(((fn [mk-length]
+  (mk-length mk-length))
+  (fn [mk-length]
+    (fn [l]
+      (cond
+        (empty? l) 0
+        :else (add1 ((mk-length eternity) (rest l)))))))
+
+  '(:apples))
+
+(((fn [mk-length]
+  (mk-length mk-length))
+  (fn [mk-length]
+    ((fn [length]
+      (fn [l]
+        (cond
+          (empty? l) 0
+          :else (add1 (length (rest l))))))
+      (fn [x]
+        ((mk-length mk-length) x)))))
+  '(:apples :oranges))
+
+(defn Y [le]
+  ((fn [f] (f f))
+    (fn [f]
+      (le (fn [x] ((f f) x))))))
