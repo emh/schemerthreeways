@@ -574,3 +574,25 @@
   ((fn [f] (f f))
     (fn [f]
       (le (fn [x] ((f f) x))))))
+
+(def new-entry build)
+
+(defn lookup-in-entry-help [name names values entry-f]
+  (cond
+    (empty? names) (entry-f name)
+    (= (first names) name) (first values)
+    :else (lookup-in-entry-help name (rest names) (rest values) entry-f)))
+
+(defn lookup-in-entry [name entry entry-f]
+  (lookup-in-entry-help
+    name
+    (first entry)
+    (second entry)
+    entry-f))
+
+(def extend-table cons)
+
+(defn lookup-in-table [name table table-f]
+  (cond
+    (empty? table) (table-f name)
+    :else (lookup-in-entry name (first table) (fn [name] (lookup-in-table name (rest table) table-f)))))

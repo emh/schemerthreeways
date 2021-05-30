@@ -1,7 +1,7 @@
 (ns emh.schemer.little-test
   (:require
     [cljs.test :refer-macros [deftest is testing run-tests]]
-    [emh.schemer.little :refer [atom? lat? member? rember firsts insert-right insert-left subst subst2 multi-rember multi-insert-right multi-insert-left multi-subst add1 sub1 plus minus add-tup mult tup-plus greater? less? equal? expt div length pick remove-pick no-nums all-nums occur rember* insert-right* occur* subst* insert-left* member* leftmost rember2 numbered? value set?? makeset makeset2 subset? eqset? intersect? intersect union difference intersect-all a-pair? fun? rev-rel full-fun? one-to-one? rember-f eq?-c rember-f2 insert-right2 insert-left2 subst3 rember3 value2 multi-rember-f multi-rember-t multi-rember-co multi-insert-leftright-co evens-only* evens-only*-co looking shift weight*]]))
+    [emh.schemer.little :refer [atom? lat? member? rember firsts insert-right insert-left subst subst2 multi-rember multi-insert-right multi-insert-left multi-subst add1 sub1 plus minus add-tup mult tup-plus greater? less? equal? expt div length pick remove-pick no-nums all-nums occur rember* insert-right* occur* subst* insert-left* member* leftmost rember2 numbered? value set?? makeset makeset2 subset? eqset? intersect? intersect union difference intersect-all a-pair? fun? rev-rel full-fun? one-to-one? rember-f eq?-c rember-f2 insert-right2 insert-left2 subst3 rember3 value2 multi-rember-f multi-rember-t multi-rember-co multi-insert-leftright-co evens-only* evens-only*-co looking shift weight* new-entry lookup-in-entry lookup-in-table]]))
 
 (deftest atom?-test
   (is (= (atom? :turkey) true))
@@ -301,5 +301,22 @@
 (deftest weight*-test
   (is (= (weight* '((:a :b) :c)) 7))
   (is (= (weight* '(:a (:b :c))) 5)))
+
+(deftest new-entry-test
+  (is (= (new-entry '(:appetizer :entree :beverage) '(:pate :boeuf :vin)) '((:appetizer :entree :beverage) (:pate :boeuf :vin))))
+  (is (= (new-entry '(:appetizer :entree :beverage) '(:beer :beer :beer)) '((:appetizer :entree :beverage) (:beer :beer :beer))))
+  (is (= (new-entry '(:beverage :dessert) '((:food :is) (:number :one :with :us))) '((:beverage :dessert) ((:food :is) (:number :one :with :us))))))
+
+(deftest lookup-in-entry-test
+  (is (= (lookup-in-entry :entree '((:appetizer :entree :beverage) (:food :tastes :good)) (fn [name] name)) :tastes))
+  (is (= (lookup-in-entry :dessert '((:appetizer :entree :beverage) (:food :tastes :good)) (fn [name] name)) :dessert)))
+
+(deftest lookup-in-table-test
+  (let [table '(
+    ((:entree :dessert) (:spaghetti :spumoni))
+    ((:appetizer :entree :beverage) (:food :tastes :good))
+  )]
+    (is (= (lookup-in-table :entree table (fn [name] name)) :spaghetti))
+    (is (= (lookup-in-table :beverage table (fn [name] name)) :good))))
 
 (run-tests)

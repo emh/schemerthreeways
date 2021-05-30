@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 
-import { isAtom, isEmpty, car, cdr, cons, isListOfAtoms, isMember, removeMember, firsts, insertRight, insertLeft, subst, subst2, multiRemoveMember, multiInsertRight, multiInsertLeft, multiSubst, add1, sub1, isZero, plus, minus, addTup, mult, tupPlus, isGreater, isLess, isEqual, expt, div, length, pick, removePick, noNums, allNums, occur, removeMemberAll, insertRightAll, occurAll, substAll, insertLeftAll, memberAll, leftMost, isDeepEqual, removeMember2, isNumbered, value, isSet, makeSet, makeSet2, isSubset, isEqualSets, doesIntersect, intersect, union, difference, intersectAll, isAPair, isFun, revRel, isFullFun, isOneToOne, isEqual2, removeMemberFn, isEqualC, removeMemberFn2, insertRight2, insertLeft2, subst3, removeMember3, multiRemoveMemberCo, multiInsertLeftRightCo, evensOnlyAll, evensOnlyAllCo, looking, shift, weightAll, Y } from '../src/little.js';
+import { isAtom, isEmpty, car, cdr, cons, isListOfAtoms, isMember, removeMember, firsts, insertRight, insertLeft, subst, subst2, multiRemoveMember, multiInsertRight, multiInsertLeft, multiSubst, add1, sub1, isZero, plus, minus, addTup, mult, tupPlus, isGreater, isLess, isEqual, expt, div, length, pick, removePick, noNums, allNums, occur, removeMemberAll, insertRightAll, occurAll, substAll, insertLeftAll, memberAll, leftMost, isDeepEqual, removeMember2, isNumbered, value, isSet, makeSet, makeSet2, isSubset, isEqualSets, doesIntersect, intersect, union, difference, intersectAll, isAPair, isFun, revRel, isFullFun, isOneToOne, isEqual2, removeMemberFn, isEqualC, removeMemberFn2, insertRight2, insertLeft2, subst3, removeMember3, multiRemoveMemberCo, multiInsertLeftRightCo, evensOnlyAll, evensOnlyAllCo, looking, shift, weightAll, Y, lookupInEntry, lookupInTable } from '../src/little.js';
 
 describe('isAtom', () => {
     it('handles strings', () => {
@@ -601,5 +601,24 @@ describe('Y', () => {
         const fn = (f) => (n) => n === 0 ? 1 : n * f(n - 1);
 
         assert.strictEqual((Y(fn))(5), 120);
+    });
+});
+
+describe('lookupInEntry', () => {
+    it('finds the value for a given name in an entry', () => {
+        assert.strictEqual(lookupInEntry('entree', [['appetizer', 'entree', 'beverage'], ['food', 'tastes', 'good']], (n) => n), 'tastes');
+        assert.strictEqual(lookupInEntry('dessert', [['appetizer', 'entree', 'beverage'], ['food', 'tastes', 'good']], (n) => n), 'dessert');
+    });
+});
+
+describe('lookupInTable', () => {
+    const table = [
+        [['entree', 'dessert'], ['spaghetti', 'spumoni']],
+        [['appetizer', 'entree', 'beverage'], ['food', 'tastes', 'good']]
+    ];
+
+    it('finds the value for a given name in a table of entries', () => {
+        assert.strictEqual(lookupInTable('entree', table, (n) => n), 'spaghetti');
+        assert.strictEqual(lookupInTable('beverage', table, (n) => n), 'good');
     });
 });

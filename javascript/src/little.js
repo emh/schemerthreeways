@@ -279,6 +279,8 @@ export const isFun = (rel) => isSet(firsts(rel));
 
 export const build = (s1, s2) => cons(s1, cons(s2, []));
 
+export const first = car;
+
 export const second = (pair) => car(cdr(pair));
 
 export const revPair = (pair) => build(second(pair), car(pair));
@@ -363,3 +365,19 @@ export const weightAll = (pora) =>
     : (weightAll(car(pora)) * 2) + weightAll(second(pora));
 
 export const Y = (le) => ((f) => f(f))((f) => le((x) => (f(f))(x)));
+
+export const newEntry = build;
+
+export const lookupInEntryHelp = (name, names, values, entryFn) =>
+    isEmpty(names) ? entryFn(name)
+    : car(names) === name ? car(values)
+    : lookupInEntryHelp(name, cdr(names), cdr(values), entryFn);
+
+export const lookupInEntry = (name, entry, entryFn) =>
+    lookupInEntryHelp(name, first(entry), second(entry), entryFn);
+
+export const extendTable = cons;
+
+export const lookupInTable = (name, table, tableFn) =>
+    isEmpty(table) ? tableFn(name)
+    : lookupInEntry(name, car(table), (name) => lookupInTable(name, cdr(table), tableFn));

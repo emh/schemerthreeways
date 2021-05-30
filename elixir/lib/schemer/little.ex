@@ -1092,4 +1092,34 @@ defmodule Schemer.Little do
     120
   """
   def y(le), do: (fn (f) -> f.(f) end).((fn (f) -> le.((fn (x) -> (f.(f)).(x) end)) end))
+
+  @doc ~S"""
+    Finds the value for a given name in an entry
+
+    iex> Schemer.Little.lookup_in_entry(:entree, [[:appetizer, :entree, :beverage], [:food, :tastes, :good]], (fn (n) -> n end))
+    :tastes
+
+    iex> Schemer.Little.lookup_in_entry(:dessert, [[:appetizer, :entree, :beverage], [:food, :tastes, :good]], (fn (n) -> n end))
+    :dessert
+  """
+  def lookup_in_entry(name, [names, values], entry_fn), do: lookup_in_entry_help(name, names, values, entry_fn)
+
+  def lookup_in_entry_help(name, [], _, entry_fn), do: entry_fn.(name)
+
+  def lookup_in_entry_help(name, [name | _], [value | _], _), do: value
+
+  def lookup_in_entry_help(name, [_ | names], [_ | values], entry_fn), do: lookup_in_entry_help(name, names, values, entry_fn)
+
+  @doc ~S"""
+    Finds the value for a given name in a table of entries
+
+    iex> Schemer.Little.lookup_in_table(:entree, [[[:entree, :dessert], [:spaghetti, :spumoni]], [[:appetizer, :entree, :beverage], [:food, :tastes, :good]]], (fn (n) -> n end))
+    :spaghetti
+
+    iex> Schemer.Little.lookup_in_table(:beverage, [[[:entree, :dessert], [:spaghetti, :spumoni]], [[:appetizer, :entree, :beverage], [:food, :tastes, :good]]], (fn (n) -> n end))
+    :good
+  """
+  def lookup_in_table(name, [], table_fn), do: table_fn.(name)
+
+  def lookup_in_table(name, [head | tail], table_fn), do: lookup_in_entry(name, head, (fn (name) -> lookup_in_table(name, tail, table_fn) end))
 end
