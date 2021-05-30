@@ -1,7 +1,7 @@
 (ns emh.schemer.little-test
   (:require
     [cljs.test :refer-macros [deftest is testing run-tests]]
-    [emh.schemer.little :refer [atom? lat? member? rember firsts insert-right insert-left subst subst2 multi-rember multi-insert-right multi-insert-left multi-subst add1 sub1 plus minus add-tup mult tup-plus greater? less? equal? expt div length pick remove-pick no-nums all-nums occur rember* insert-right* occur* subst* insert-left* member* leftmost rember2 numbered? value set?? makeset makeset2 subset? eqset? intersect? intersect union difference intersect-all a-pair? fun? rev-rel full-fun? one-to-one? rember-f eq?-c rember-f2 insert-right2 insert-left2 subst3 rember3 value2 multi-rember-f multi-rember-t multi-rember-co multi-insert-leftright-co evens-only* evens-only*-co looking shift weight* new-entry lookup-in-entry lookup-in-table]]))
+    [emh.schemer.little :refer [atom? lat? member? rember firsts insert-right insert-left subst subst2 multi-rember multi-insert-right multi-insert-left multi-subst add1 sub1 plus minus add-tup mult tup-plus greater? less? equal? expt div length pick remove-pick no-nums all-nums occur rember* insert-right* occur* subst* insert-left* member* leftmost rember2 numbered? value set?? makeset makeset2 subset? eqset? intersect? intersect union difference intersect-all a-pair? fun? rev-rel full-fun? one-to-one? rember-f eq?-c rember-f2 insert-right2 insert-left2 subst3 rember3 value2 multi-rember-f multi-rember-t multi-rember-co multi-insert-leftright-co evens-only* evens-only*-co looking shift weight* new-entry lookup-in-entry lookup-in-table *cond *application value3]]))
 
 (deftest atom?-test
   (is (= (atom? :turkey) true))
@@ -318,5 +318,18 @@
   )]
     (is (= (lookup-in-table :entree table (fn [name] name)) :spaghetti))
     (is (= (lookup-in-table :beverage table (fn [name] name)) :good))))
+
+(deftest *cond-test
+  (let [e '(:cond (:coffee :klatsch) (:else :party))
+        table '(((:coffee) (:t)) ((:klatsch :party) (5 (6))))]
+    (is (= (*cond e table) 5))))
+
+(deftest *application-test
+  (let [e '(:cons :x :y)
+        table '(((:x :y) (1 (2))))]
+    (is (= (*application e table) '(1 2)))))
+
+(deftest value3-test
+  (is (= (value3 '((:lambda (:x) (:cons :x ())) 5)) '(5))))
 
 (run-tests)

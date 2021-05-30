@@ -379,7 +379,7 @@
 (defn value2 [nexp]
   (cond
     (atom? nexp) nexp
-    :else ((atom-to-fn (operator nexp)) (value (first-sexp nexp)) (value (second-sexp nexp)))))
+    :else ((atom-to-fn (operator nexp)) (value2 (first-sexp nexp)) (value2 (second-sexp nexp)))))
 
 (defn multi-rember2 [])
 
@@ -596,3 +596,134 @@
   (cond
     (empty? table) (table-f name)
     :else (lookup-in-entry name (first table) (fn [name] (lookup-in-table name (rest table) table-f)))))
+
+(defn *const [e table]
+  (cond
+    (number? e) e
+    (= e :t) true
+    (= e :f) false
+    :else (build :primitive e)))
+
+(def text-of second)
+
+(defn *quote [e table] (text-of e))
+
+(defn initial-table [name] (first '()))
+
+(defn *identifier [e table] (lookup-in-table e table initial-table))
+
+(defn *lambda [e table] (build :non-primitive (cons table (rest e))))
+
+(def table-of first)
+
+(def formals-of second)
+
+(defn third [l] (first (rest (rest l))))
+
+(def body-of third)
+
+(defn else? [x] (and (atom? x) (= x :else)))
+
+(def question-of first)
+
+(def answer-of second)
+
+(declare meaning)
+
+(defn evcon [lines table]
+  (cond
+    (else? (question-of (first lines))) (meaning (answer-of (first lines)) table)
+    (meaning (question-of (first lines)) table) (meaning (answer-of (first lines)) table)
+    :else (evcon (rest lines) table)))
+
+(def cond-lines-of rest)
+
+(defn *cond [e table] (evcon (cond-lines-of e) table))
+
+(defn evlis [args table]
+  (cond
+    (empty? args) []
+    :else (cons (meaning (first args) table) (evlis (rest args) table))))
+
+(def function-of first)
+
+(def arguments-of rest)
+
+(defn primitive? [l] (= (first l) :primitive))
+
+(defn non-primitive? [l] (= (first l) :non-primitive))
+
+(defn atom2? [x]
+  (cond
+    (atom? x) true
+    (empty? x) false
+    (= (first x) :primitive) true
+    (= (first x) :non-primitive) true
+    :else false))
+
+(defn apply-primitive [name vals]
+  (cond
+    (= name :cons) (cons (first vals) (second vals))
+    (= name :car) (first (first vals))
+    (= name :cdr) (rest (first vals))
+    (= name :null?) (empty? (first vals))
+    (= name :eq?) (= (first vals) (second vals))
+    (= name :atom?) (atom2? (first vals))
+    (= name :zero?) (zero? (first vals))
+    (= name :add1) (add1 (first vals))
+    (= name :sub1) (sub1 (first vals))
+    (= name :number?) (number? (first vals))))
+
+(defn apply-closure [closure vals]
+  (meaning
+    (body-of closure)
+    (extend-table
+      (new-entry (formals-of closure) vals)
+      (table-of closure))))
+
+(defn apply2 [fun vals]
+  (cond
+    (primitive? fun) (apply-primitive (second fun) vals)
+    (non-primitive? fun) (apply-closure (second fun) vals)))
+
+(defn *application [e table]
+  (apply2
+    (meaning (function-of e) table)
+    (evlis (arguments-of e) table)))
+
+(defn atom-to-action [e]
+  (cond
+    (number? e) *const
+    (= e :t) *const
+    (= e :f) *const
+    (= e :cons) *const
+    (= e :car) *const
+    (= e :cdr) *const
+    (= e :null) *const
+    (= e :eq?) *const
+    (= e :atom?) *const
+    (= e :zero?) *const
+    (= e :add1) *const
+    (= e :sub1) *const
+    (= e :number?) *const
+    :else *identifier))
+
+(defn list-to-action [e]
+  (cond
+    (atom? (first e))
+      (let [atom (first e)]
+        (cond
+          (= atom :quote) *quote
+          (= atom :lambda) *lambda
+          (= atom :cond) *cond
+          :else *application))
+    :else *application))
+
+(defn expression-to-action [e]
+  (cond
+    (atom? e) (atom-to-action e)
+    :else (list-to-action e)))
+
+(defn meaning [e table] ((expression-to-action e) e table))
+
+(defn value3 [e] (meaning e '()))
